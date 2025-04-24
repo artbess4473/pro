@@ -1,0 +1,862 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>밝은세상 (가)견적</title>
+        <!-- 구글 웹 폰트: Noto Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans', sans-serif; /* Noto Sans 폰트 적용 */
+            background-color: #f4f4f9;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 18px; /* Adjust font size for better mobile readability */
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 280px;
+            letter-spacing: -0.3px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px; /* Increase padding for easier interaction */
+            margin-top: 4px; /* Increase margin for better spacing */
+            margin-bottom: 15px; /* Increase margin for better spacing */
+            padding-left: 5px; /* 왼쪽 padding을 적절히 설정 */
+            margin-left: 0; /* margin-left을 0으로 설정하여 왼쪽 여백을 제거 */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px; /* Increase font size inside inputs */
+        }
+
+
+        label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 15px; / 
+
+    select {
+    margin-top: 30px; /* select 박스와 구분 사이의 간격 밀기 */
+}
+}
+
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px; /* Increase button font size */
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            line-height: 1.65;
+            margin-top: 0px;
+            font-weight: bold;
+            font-size: 16px; /* Ensure result text is large enough */
+        }
+
+        .warning {
+            font-size: 14px;
+            font-weight: bold;
+            color: red;
+            margin-top: -15px;
+            margin-bottom: 20px;
+        }
+
+        .warning2 {
+            font-size: 14px;
+            font-weight: bold;
+            color: blue;
+            margin-top: -15px;
+            margin-bottom: 20px;
+        }
+
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 16px; /* Adjust font size on smaller screens */
+            }
+
+            .container {
+                width: 90%; /* Adjust container width on smaller screens */
+            }
+
+            input, select, button {
+                font-size: 18px; /* Increase font size for mobile */
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <body translate="no">
+    <div class="container">
+        <h2>밝은세상 (가)견적</h2>
+        <div class="warning">
+            최종견적은 총무팀장과 상의 후 확정.
+        </div>
+
+        <div class="warning2">
+            시공비 제외. (게시대현수막은 포함)
+        </div>
+
+
+        <label for="type">구분</label>
+        <select id="type" onchange="toggleOptions()">
+            <option value="banner" selected>일반현수막</option>
+            <option value="postingBanner">게시대현수막</option>
+            <option value="largeBanner">대형현수막</option>
+            <option value="printOnlyBanner">출력(만)현수막</option>
+            <option value="ecoBanner">친환경현수막</option>
+            <option value="pick">피켓</option>
+            <option value="bannerItem">배너</option>
+            <option value="print">인쇄</option>
+        </select>
+
+        <!-- 일반 현수막 -->
+        <div id="bannerOptions">
+            <label for="width">폭 선택</label>
+            <select id="width">
+                <option value="90">90 cm 이하</option>
+                <option value="100">100 cm</option>
+                <option value="110">110 cm</option>
+                <option value="120">120 cm</option>
+                <option value="150">150 cm</option>
+                <option value="180">180 cm</option>
+            </select>
+
+            <label for="length">길이 (cm)</label>
+            <input type="number" id="length" placeholder="길이를 입력하세요" />
+
+            <label for="quantity">수량</label>
+            <input type="number" id="quantity" value="1" />
+        </div>
+
+        <!-- 게시대 현수막 -->
+<div id="postingBannerOptions" class="hidden">
+    <label for="postingPeriod">게시 기간</label>
+    <select id="postingPeriod">
+        <option value="1">1주</option>
+        <option value="2">2주</option>
+    </select>
+
+    <label for="postingQuantity">수량</label>
+    <input type="number" id="postingQuantity" value="1" />
+</div>
+
+        <!-- 대형 현수막 -->
+        <div id="largeBannerOptions" class="hidden">
+            <label for="largeWidth">폭 (cm)</label>
+            <input type="number" id="largeWidth" placeholder="폭을 입력하세요" />
+
+            <label for="largeLength">길이 (cm)</label>
+            <input type="number" id="largeLength" placeholder="길이를 입력하세요" />
+
+            <label for="largeQuantity">수량</label>
+            <input type="number" id="largeQuantity" value="1" />
+        </div>
+
+        <!-- 출력(만)현수막 -->
+<div id="printOnlyBannerOptions" class="hidden">
+    <label for="printOnlyWidth">폭 (cm)</label>
+    <input type="number" id="printOnlyWidth" placeholder="폭을 입력하세요" />
+
+    <label for="printOnlyLength">길이 (cm)</label>
+    <input type="number" id="printOnlyLength" placeholder="길이를 입력하세요" />
+
+    <label for="printOnlyQuantity">수량</label>
+    <input type="number" id="printOnlyQuantity" value="1" />
+</div>
+
+
+        <!-- 친환경현수막 -->
+<div id="ecoBannerOptions" class="hidden">
+    <label for="ecoWidth">폭 선택</label>
+    <select id="ecoWidth">
+        <option value="60">60 cm</option>
+        <option value="90">90 cm</option>
+    </select>
+
+    <label for="ecoLength">길이 (cm)</label>
+    <input type="number" id="ecoLength" placeholder="길이를 입력하세요" />
+
+    <label for="ecoQuantity">수량</label>
+    <input type="number" id="ecoQuantity" value="1" />
+</div>
+
+
+        <!-- 피켓 -->
+        <div id="pickOptions" class="hidden">
+            <label for="pickType">종류</label>
+            <select id="pickType">
+                <option value="pick1">피켓(현수막) 45cm*60cm</option>
+                <option value="pick2">피켓(현수막) 60cm*90cm</option>
+                <option value="pick3">피켓(현수막) 90cm*120cm</option>
+                <option value="pick4">피켓(현수막+폼보드) 45cm*60cm</option>
+                <option value="pick5">피켓(현수막+폼보드) 60cm*90cm</option>
+                <option value="pick6">피켓(현수막+폼보드) 90cm*120cm</option>
+                <option value="pick7">피켓(시트지+폼보드) 45cm*60cm</option>
+                <option value="pick8">피켓(시트지+폼보드) 60cm*90cm</option>
+                <option value="pick9">피켓(시트지+폼보드) 90cm*120cm</option>
+            </select>
+
+            <label for="pickQuantity">수량</label>
+            <input type="number" id="pickQuantity" value="1" />
+        </div>
+
+        <!-- 배너 -->
+        <div id="bannerItemOptions" class="hidden">
+            <label for="bannerType">종류</label>
+            <select id="bannerType">
+                <option value="fabric">부직포 배너</option>
+                <option value="pet">PET 배너</option>
+                <option value="eco">친환경현수막 배너</option>
+                <option value="indoor">실내용 배너대</option>
+                <option value="outdoor">실외용 배너대(물통)</option>
+            </select>
+
+            <label for="bannerQuantity">수량</label>
+            <input type="number" id="bannerQuantity" value="1" />
+        </div>
+
+        <!-- 인쇄 -->
+        <div id="printOptions" class="hidden">
+            <label for="printType">종류</label>
+            <select id="printType">
+                <option value="leaflet">전단(합판)</option>
+                <option value="businessCard">명함</option>
+            </select>
+
+            <label for="printSize" id="printSizeLabel">사이즈</label>
+            <select id="printSize">
+                <option value="a4">A4</option>
+                <option value="b4">B4</option>
+                <option value="b5">B5</option>
+            </select>
+
+
+              <!-- 명함 선택 시 표시될 종이종류 -->
+  <label for="paperType" id="paperTypeLabel" class="hidden">종이종류</label>
+  <select id="paperType" class="hidden">
+    <option value="snow">일반지(스노)</option>
+    <option value="special">특수지(반누보 외)</option>
+  </select>
+
+
+
+            <label for="printSide">인쇄면</label>
+            <select id="printSide">
+                <option value="single">단면</option>
+                <option value="double">양면</option>
+            </select>
+
+            <label for="printQuantity">수량</label>
+            <input type="number" id="printQuantity" value="4000" />
+        </div>
+
+        <button onclick="calculatePrice()">계산하기</button>
+
+        <div class="result" id="result"></div>
+
+        </div>
+
+
+<!-- JavaScript 수정 부분 시작 -->
+
+    <script>
+        // ✅ 천원 단위 절삭 함수
+  function roundToThousand(value) {
+    return Math.floor(value / 1000) * 1000;
+  }
+        // ✅ 일반현수막 노조·사회단체용 가격표
+
+
+const unionBannerPrices = {
+  90: {
+    steps: [
+      { max: 149, price: 15000 },
+      { max: 199, price: 20000 },
+      { max: 249, price: 25000 },
+      { max: 299, price: 30000 },
+      { max: 500, price: 33000 }
+    ],
+    base: 33000,
+    extraUnit: 6600
+  },
+  100: { base: 42500, perM2: 8500 },
+  110: { base: 46750, perM2: 8500 },
+  120: { base: 51000, perM2: 8500 },
+  130: { base: 58500, perM2: 9000 },
+  140: { base: 63000, perM2: 9000 },
+  150: { base: 67500, perM2: 9000 },
+  160: { base: 76000, perM2: 9500 },
+  170: { base: 80750, perM2: 9500 },
+  180: { base: 85500, perM2: 9500 }
+};
+
+
+
+// ✅ 일반현수막 관공서 외 가격표
+const govBannerPrices = {
+  90: [
+    { max: 149, price: 22000 },
+    { max: 199, price: 27500 },
+    { max: 249, price: 33000 },
+    { max: 299, price: 38500 },
+    { max: 500, price: 44000 }
+  ],
+  100: [
+        { default: true, perM2: 12000 }
+  ],
+  110: [
+    { default: true, perM2: 12000 }
+  ],
+  120: [
+    { default: true, perM2: 12000 }
+  ],
+  150: [
+    { default: true, perM2: 12000 }
+  ],
+  180: [
+    { default: true, perM2: 12000 }
+  ],
+  default: {
+    perM2: 12000
+  }
+};
+
+
+
+	// ✅ 피켓 가격 (정액)
+        const pickPrices = { pick1: [3300, 8800], pick2: [5500, 11000], pick3: [8800, 15000] , pick4: [9000, 16500] , pick5: [11000, 25000] , pick6: [22000, 35000] , pick7: [30000, 33000] , pick8: [40000, 44000] , pick9: [6000, 66000] };
+
+	// ✅ 배너 가격 (정액)
+	const bannerItemPrices = { fabric: [30000, 33000], pet: [55000, 60000], indoor: [25000, 27000], outdoor: [30000, 35000],  eco: [40000, 44000] };
+
+	// ✅ 전단 가격 (정액)
+const printPrices = { 
+    leaflet: {
+        a4: { single: 165000, double: 250000 },
+        b4: { single: 275000, double: 380000 },
+        b5: { single: 195000, double: 280000 }
+    }
+};
+    // 가격 상수 추가
+const postingBannerPrices = { 1: 70000, 2: 100000 };
+
+
+
+function toggleOptions() {
+    const allOptionIds = [
+        'bannerOptions',
+        'largeBannerOptions',
+        'ecoBannerOptions',
+        'pickOptions',
+        'bannerItemOptions',
+        'printOptions',
+        'postingBannerOptions',
+        'printOnlyBannerOptions' 
+    ];
+
+    // 모든 옵션 숨기고 input/select 초기화
+    allOptionIds.forEach(id => {
+        const section = document.getElementById(id);
+        if (section) {
+            section.classList.add('hidden');
+            Array.from(section.querySelectorAll('input, select')).forEach(el => {
+                if (el.tagName === 'INPUT') {
+                    if (el.id.includes('Quantity')) {
+                        el.value = 1;  // 수량을 1로 설정
+                    } else {
+                        el.value = ''; // 길이, 폭은 비우기
+                    }
+                } else if (el.tagName === 'SELECT') {
+                    el.selectedIndex = 0; // select는 첫 번째 옵션으로 설정
+                }
+            });
+        }
+    });
+
+    // 선택한 항목만 다시 보여줌
+    const selectedType = document.getElementById('type').value;
+    const targetSection = document.getElementById(`${selectedType}Options`);
+    if (targetSection) {
+        targetSection.classList.remove('hidden');
+    }
+
+
+    // 바로 넘어갔을 때 가격 자동 계산
+    if (['print', 'pick', 'bannerItem', 'postingBanner', 'largeBanner', 'banner', 'ecoBanner'].includes(selectedType)) {
+    calculatePrice();
+}
+
+
+
+    // 일반현수막 수량 1로 설정
+    if (selectedType === 'banner') {
+        document.getElementById('quantity').value = 1;  // 일반현수막 수량을 1로 설정
+    }
+
+    // 인쇄 전단 A4 수량 4000으로 고정
+    if (selectedType === 'print') {
+        const printType = document.getElementById('printType')?.value;
+        const printSize = document.getElementById('printSize')?.value;
+        const paperType = document.getElementById('paperType')?.value;
+        const quantityInput = document.getElementById('printQuantity');
+
+        // 명함이 아니라 전단이고, A4가 선택된 경우
+        if (printType === 'leaflet' && printSize === 'a4') {
+            quantityInput.value = 4000;
+        }
+
+        if (printType === 'businessCard') {
+            quantityInput.value = (paperType === 'snow') ? 500 : 200;
+        } else {
+            quantityInput.value = (printSize === 'b5') ? 8000 : 4000;
+        }
+    }
+}
+
+
+// ✅ printSize 값이 변경될 때 기본 수량 설정
+document.getElementById('printSize').addEventListener('change', () => {
+    const printSize = document.getElementById('printSize').value;
+    if (printSize === 'b5') {
+        document.getElementById('printQuantity').value = 8000; // **수정됨**
+    } else {
+        document.getElementById('printQuantity').value = 4000; // **수정됨**
+    }
+});
+
+
+
+
+
+
+function calculatePrice() {
+    let totalPrice = 0;
+    let totalPrice2 = 0;
+    const type = document.getElementById('type').value;
+
+    // 피켓
+    if (type === 'pick') {
+        const price = pickPrices[document.getElementById('pickType')?.value];
+        const quantity = parseInt(document.getElementById('pickQuantity')?.value) || 0;
+        if (price) {
+            totalPrice = price[0] * quantity;
+            totalPrice2 = price[1] * quantity;
+        }
+    }
+
+    // 배너
+    else if (type === 'bannerItem') {
+        const bannerType = document.getElementById('bannerType')?.value;
+        const bannerQuantity = parseInt(document.getElementById('bannerQuantity')?.value) || 0;
+        if (bannerType && bannerItemPrices[bannerType]) {
+            const price = bannerItemPrices[bannerType];
+            totalPrice = price[0] * bannerQuantity;
+            totalPrice2 = price[1] * bannerQuantity;
+        }
+    }
+
+    // 대형현수막
+    else if (type === 'largeBanner') {
+    const width = parseFloat(document.getElementById('largeWidth')?.value) || 0;
+    const length = parseFloat(document.getElementById('largeLength')?.value) || 0;
+    const quantity = parseInt(document.getElementById('largeQuantity')?.value) || 0;
+
+    if (width > 0 && length > 0 && quantity > 0) {
+        const area = (width / 100) * (length / 100);  // m² 계산
+
+        totalPrice = area * 11000 * quantity;        // 노조·사회단체
+        totalPrice2 = area * 15000 * quantity;       // 관공서 외
+        const totalPrice3 = area * 7000 * quantity;  // 하청가
+
+        document.getElementById('result').innerHTML = `
+            노조, 사회단체 : ${roundToThousand(totalPrice).toLocaleString()} 원<br>
+            관공서 외(카드,세금계산서) : ${roundToThousand(totalPrice2).toLocaleString()} 원<br>
+            <span style="color:gray;">하청가(서울디자인) : ${roundToThousand(totalPrice3).toLocaleString()} 원</span>
+        `;
+        return;
+    }
+}
+
+
+    // 출력(만)현수막
+else if (type === 'printOnlyBanner') {
+    const width = parseFloat(document.getElementById('printOnlyWidth')?.value) || 0;
+    const length = parseFloat(document.getElementById('printOnlyLength')?.value) || 0;
+    const quantity = parseInt(document.getElementById('printOnlyQuantity')?.value) || 0;
+
+    if (width > 0 && length > 0 && quantity > 0) {
+        const area = (width / 100) * (length / 100); // ㎡ 계산
+        const basePrice = area * 6000 * quantity;
+        const govPrice = area * 8500 * quantity;
+
+        totalPrice = roundToThousand(basePrice);
+        totalPrice2 = roundToThousand(govPrice);
+
+        document.getElementById('result').innerHTML = `
+            노조, 사회단체 : ${totalPrice.toLocaleString()} 원<br>
+            관공서 외(카드,세금계산서) : ${totalPrice2.toLocaleString()} 원<br>
+            <span style="color:gray;">※ 대형(180cm 이상)은 별도 금액</span>
+        `;
+        return;
+    }
+}
+
+
+
+    // 게시대 현수막
+else if (type === 'postingBanner') {
+    const period = parseInt(document.getElementById('postingPeriod').value) || 1;
+    const quantity = parseInt(document.getElementById('postingQuantity').value) || 1;
+    const unitPrice = postingBannerPrices[period] || 0;
+
+    totalPrice2 = unitPrice * quantity;
+
+    // ✅ 결과 출력: 관공서 외 가격 + 회색 안내문구
+    document.getElementById('result').innerHTML =
+      `관공서 외(카드,세금계산서) : ${roundToThousand(totalPrice2).toLocaleString()} 원<br>
+       <span style="color:gray;">※ 게시대 위치에 따라 달라질 수 있음</span>`;
+    return;
+}
+
+
+
+
+    /// 일반 현수막
+else if (type === 'banner') {
+    const width = parseInt(document.getElementById('width')?.value) || 0;
+    const length = parseFloat(document.getElementById('length')?.value) || 0;
+    const quantity = parseInt(document.getElementById('quantity')?.value) || 0;
+    const lengthCm = Math.floor(length); // ← 천원 절삭 연산 안전하게
+
+    if (width && lengthCm && quantity) {
+        // --- 노조/사회단체 계산
+        const unionInfo = unionBannerPrices[width];
+        
+
+        if (unionInfo) {
+  let unitPrice = 0;
+
+  // ✅ 90폭은 steps 방식 사용
+  if (width === 90 && unionInfo.steps) {
+    for (const step of unionInfo.steps) {
+      if (lengthCm <= step.max) {
+        unitPrice = step.price;
+        break;
+      }
+    }
+    if (lengthCm > 500) {
+      const extraCm = lengthCm - 500;
+      const extraCount = Math.ceil(extraCm / 100);
+      unitPrice = unionInfo.base + (unionInfo.extraUnit * extraCount);
+    }
+    totalPrice = roundToThousand(unitPrice * quantity);
+  }
+
+  // ✅ 100폭 이상은 perM2 사용
+  else if (unionInfo.base && unionInfo.perM2) {
+      // ✅ 100폭 이상: base + 길이 비율 적용
+      const basePrice = unionInfo.base;
+
+      if (lengthCm <= 100) {
+        unitPrice = basePrice * 0.375;
+      } else if (lengthCm <= 200) {
+        unitPrice = basePrice * 0.5;
+      } else if (lengthCm <= 300) {
+        unitPrice = basePrice * 0.75;
+      } else if (lengthCm <= 400) {
+        unitPrice = basePrice * 0.8;
+      } else if (lengthCm <= 500) {
+        unitPrice = basePrice;
+      } else {
+        // ✅ 500cm 초과 시 제곱미터 계산
+        const area = (width / 100) * (lengthCm / 100);
+        unitPrice = unionInfo.perM2 * area;
+      }
+    }
+
+    totalPrice = roundToThousand(unitPrice * quantity);
+  }
+
+
+
+
+
+        // --- 관공서 외 계산
+
+
+
+
+const govInfo = govBannerPrices[width] || govBannerPrices.default;
+let unitPrice2 = 0;
+
+if (Array.isArray(govInfo)) {
+    let matched = false;
+    for (const step of govInfo) {
+        if (step.max && lengthCm <= step.max) {
+            unitPrice2 = step.price;
+            matched = true;
+            break;
+        }
+    }
+
+    // 👉 90폭 & 길이 500초과: 44,000 + (100cm마다 8,800원)
+    if (!matched && width === 90 && lengthCm > 500) {
+        const extraLength = lengthCm - 500;
+        const extraUnitCount = Math.ceil(extraLength / 100);
+        unitPrice2 = 44000 + (extraUnitCount * 8800);
+        matched = true;
+    }
+
+    if (!matched) {
+    if (Array.isArray(govInfo)) {
+        const defaultStep = govInfo.find(s => s.default);
+        if (defaultStep) {
+            const areaM2 = (width / 100) * (lengthCm / 100);
+            unitPrice2 = areaM2 * defaultStep.perM2;
+        }
+    } else if (govInfo.perM2) {
+        // 이 부분이 기존 코드에 빠져 있어서 'default'가 무시됨
+        const areaM2 = (width / 100) * (lengthCm / 100);
+        unitPrice2 = areaM2 * govInfo.perM2;
+    }
+}
+
+}
+
+
+
+        totalPrice2 = unitPrice2 * quantity;
+    }
+
+    // ✅ 천 원 단위 절삭 후 출력
+    document.getElementById('result').innerHTML =
+      `노조, 사회단체 : ${roundToThousand(totalPrice).toLocaleString()} 원<br>
+       관공서 외(부가세포함) : ${roundToThousand(totalPrice2).toLocaleString()} 원`;
+  }
+
+// 친환경현수막
+else if (type === 'ecoBanner') {
+    const width = parseInt(document.getElementById('ecoWidth')?.value) || 0;
+    const lengthCm = parseFloat(document.getElementById('ecoLength')?.value) || 0;
+    const quantity = parseInt(document.getElementById('ecoQuantity')?.value) || 0;
+
+    if (width && lengthCm && quantity) {
+        let unitPrice = 0;
+
+        if (width === 60) {
+            if (lengthCm <= 299) {
+                unitPrice = 45000;
+            } else if (lengthCm <= 500) {
+                unitPrice = 55000;
+            } else {
+                unitPrice = 55000 + Math.ceil((lengthCm - 500) / 100) * 15000;
+            }
+        } else if (width === 90) {
+            if (lengthCm <= 299) {
+                unitPrice = 50000;
+            } else if (lengthCm <= 500) {
+                unitPrice = 60000;
+            } else {
+                unitPrice = 60000 + Math.ceil((lengthCm - 500) / 100) * 15000;
+            }
+        }
+
+        const total = unitPrice * quantity;
+
+        document.getElementById('result').innerHTML =
+          `관공서 외(카드,세금계산서) : ${roundToThousand(total).toLocaleString()} 원<br>
+           <span style="color:gray;">※ 각목+끈 : 5,000원 추가</span>`;
+        return;
+    }
+}
+
+
+// 인쇄 (전단 or 명함)
+else if (type === 'print') {
+    const printType = document.getElementById('printType')?.value;
+
+    // 명함 처리 (정액 가격)
+    if (printType === 'businessCard') {
+        const paperType = document.getElementById('paperType').value;
+        const printSide = document.getElementById('printSide').value;
+
+        if (paperType === 'snow') {
+            if (printSide === 'single') {
+                totalPrice = 11000; // 명함 단면 가격
+                totalPrice2 = 15000; // 부가세 포함 가격
+            } else if (printSide === 'double') {
+                totalPrice = 20000; // 명함 양면 가격
+                totalPrice2 = 25000; // 부가세 포함 가격
+            }
+        } else if (paperType === 'special') {
+            if (printSide === 'single') {
+                totalPrice = 22000; // 특수지 명함 단면 가격
+                totalPrice2 = 25000; // 부가세 포함 가격
+            } else if (printSide === 'double') {
+                totalPrice = 30000; // 특수지 명함 양면 가격
+                totalPrice2 = 35000; // 부가세 포함 가격
+            }
+        }
+    } 
+
+
+
+    // 전단 처리 (정액 가격)
+    else if (printType === 'leaflet') {
+    const printSize = document.getElementById('printSize')?.value;
+    const printSide = document.getElementById('printSide')?.value;
+
+    const priceData = printPrices.leaflet?.[printSize]?.[printSide];
+
+    if (priceData) {
+        totalPrice = priceData;
+        totalPrice2 = Math.round(priceData * 1.1);  // 부가세 10% 추가
+    }
+}
+    
+    
+}
+
+
+    // 결과 출력
+    document.getElementById('result').innerHTML =
+  `노조, 사회단체 : ${roundToThousand(totalPrice).toLocaleString()} 원<br>
+   관공서 외(카드,세금계산서) : ${roundToThousand(totalPrice2).toLocaleString()} 원`;
+
+}
+
+
+// 인쇄 항목 선택시 바로 가격이 나오도록 이벤트 추가
+document.getElementById('printType').addEventListener('change', calculatePrice);
+document.getElementById('printSize').addEventListener('change', calculatePrice);
+document.getElementById('printSide').addEventListener('change', calculatePrice);
+document.getElementById('paperType').addEventListener('change', calculatePrice);
+document.getElementById('pickType').addEventListener('change', calculatePrice);
+document.getElementById('pickQuantity').addEventListener('change', calculatePrice);
+document.getElementById('bannerType').addEventListener('change', calculatePrice);
+document.getElementById('bannerQuantity').addEventListener('change', calculatePrice);
+document.getElementById('postingPeriod').addEventListener('change', calculatePrice);
+document.getElementById('postingQuantity').addEventListener('input', calculatePrice);
+document.getElementById('printOnlyWidth').addEventListener('input', calculatePrice);
+document.getElementById('printOnlyLength').addEventListener('input', calculatePrice);
+document.getElementById('printOnlyQuantity').addEventListener('input', calculatePrice);
+document.getElementById('width').addEventListener('change', calculatePrice);
+document.getElementById('length').addEventListener('input', calculatePrice);
+document.getElementById('quantity').addEventListener('input', calculatePrice);
+document.getElementById('largeWidth').addEventListener('input', calculatePrice);
+document.getElementById('largeLength').addEventListener('input', calculatePrice);
+document.getElementById('largeQuantity').addEventListener('input', calculatePrice);
+document.getElementById('ecoWidth').addEventListener('change', calculatePrice);
+document.getElementById('ecoLength').addEventListener('input', calculatePrice);
+document.getElementById('ecoQuantity').addEventListener('input', calculatePrice);
+
+
+// toggleOptions()는 페이지가 처음 로드될 때 한 번만 호출
+toggleOptions(); 
+
+// ✅ printType 변경 시 사이즈/종이종류 토글
+document.addEventListener('DOMContentLoaded', () => {
+  const printTypeSelect = document.getElementById('printType');
+  const sizeLabel = document.getElementById('printSizeLabel');
+  const sizeSelect = document.getElementById('printSize');
+  const paperLabel = document.getElementById('paperTypeLabel');
+  const paperSelect = document.getElementById('paperType');
+  const quantityInput = document.getElementById('printQuantity');
+
+  if (printTypeSelect) {
+    printTypeSelect.addEventListener('change', () => {
+      const printType = printTypeSelect.value;
+
+      if (printType === 'businessCard') {
+        if (sizeLabel) sizeLabel.classList.add('hidden');
+        if (sizeSelect) sizeSelect.classList.add('hidden');
+        if (paperLabel) paperLabel.classList.remove('hidden');
+        if (paperSelect) paperSelect.classList.remove('hidden');
+
+        if (paperSelect.value === 'snow') {
+          if (quantityInput) quantityInput.value = 500;
+        } else {
+          if (quantityInput) quantityInput.value = 200;
+        }
+      } else {
+        if (sizeLabel) sizeLabel.classList.remove('hidden');
+        if (sizeSelect) sizeSelect.classList.remove('hidden');
+        if (paperLabel) paperLabel.classList.add('hidden');
+        if (paperSelect) paperSelect.classList.add('hidden');
+
+        if (sizeSelect.value === 'b5') {
+          if (quantityInput) quantityInput.value = 8000;
+        } else {
+          if (quantityInput) quantityInput.value = 4000;
+        }
+      }
+    });
+  }
+
+  if (paperSelect) {
+    paperSelect.addEventListener('change', () => {
+      const paperType = paperSelect.value;
+      if (quantityInput) {
+        if (paperType === 'snow') {
+          quantityInput.value = 500;
+        } else {
+          quantityInput.value = 200;
+        }
+      }
+    });
+  }
+});
+
+
+  // ✅ 종이 종류 변경 시 수량 자동 설정
+  document.getElementById('paperType').addEventListener('change', () => {
+    const paperType = document.getElementById('paperType').value;
+    const quantityInput = document.getElementById('printQuantity');
+    if (paperType === 'snow') {
+      quantityInput.value = 500;
+    } else {
+      quantityInput.value = 200;
+    }
+  });
+
+ 
+
+
+// ✅ Enter 키 눌렀을 때 자동 계산되도록 이벤트 추가 (맨 아래 추가)
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        calculatePrice(); // Enter키 눌렀을 때 계산 함수 실행
+    }
+});
+
+
+</script>
+
+</body>
+</html>
