@@ -137,18 +137,22 @@
 
         <!-- 일반 현수막 -->
         <div id="bannerOptions">
+                        <label for="length">길이 (cm)</label>
+            <input type="number" id="length" placeholder="길이를 입력하세요" />
+
             <label for="width">폭 선택</label>
             <select id="width">
                 <option value="90">90 cm 이하</option>
                 <option value="100">100 cm</option>
                 <option value="110">110 cm</option>
                 <option value="120">120 cm</option>
+                <option value="130">130 cm</option>
+                <option value="140">140 cm</option>
                 <option value="150">150 cm</option>
+                <option value="160">160 cm</option>
+                <option value="170">170 cm</option>
                 <option value="180">180 cm</option>
             </select>
-
-            <label for="length">길이 (cm)</label>
-            <input type="number" id="length" placeholder="길이를 입력하세요" />
 
             <label for="quantity">수량</label>
             <input type="number" id="quantity" value="1" />
@@ -168,11 +172,11 @@
 
         <!-- 대형 현수막 -->
         <div id="largeBannerOptions" class="hidden">
-            <label for="largeWidth">폭 (cm)</label>
-            <input type="number" id="largeWidth" placeholder="폭을 입력하세요" />
-
             <label for="largeLength">길이 (cm)</label>
             <input type="number" id="largeLength" placeholder="길이를 입력하세요" />
+
+            <label for="largeWidth">폭 (cm)</label>
+            <input type="number" id="largeWidth" placeholder="폭을 입력하세요" />
 
             <label for="largeQuantity">수량</label>
             <input type="number" id="largeQuantity" value="1" />
@@ -180,27 +184,28 @@
 
         <!-- 출력(만)현수막 -->
 <div id="printOnlyBannerOptions" class="hidden">
-    <label for="printOnlyWidth">폭 (cm)</label>
-    <input type="number" id="printOnlyWidth" placeholder="폭을 입력하세요" />
-
     <label for="printOnlyLength">길이 (cm)</label>
     <input type="number" id="printOnlyLength" placeholder="길이를 입력하세요" />
 
-    <label for="printOnlyQuantity">수량</label>
+    <label for="printOnlyWidth">폭 (cm)</label>
+    <input type="number" id="printOnlyWidth" placeholder="폭을 입력하세요" />
+
+        <label for="printOnlyQuantity">수량</label>
     <input type="number" id="printOnlyQuantity" value="1" />
 </div>
 
 
         <!-- 친환경현수막 -->
 <div id="ecoBannerOptions" class="hidden">
+    
+    <label for="ecoLength">길이 (cm)</label>
+    <input type="number" id="ecoLength" placeholder="길이를 입력하세요" />
+
     <label for="ecoWidth">폭 선택</label>
     <select id="ecoWidth">
         <option value="60">60 cm</option>
         <option value="90">90 cm</option>
     </select>
-
-    <label for="ecoLength">길이 (cm)</label>
-    <input type="number" id="ecoLength" placeholder="길이를 입력하세요" />
 
     <label for="ecoQuantity">수량</label>
     <input type="number" id="ecoQuantity" value="1" />
@@ -305,14 +310,14 @@ const unionBannerPrices = {
     base: 33000,
     extraUnit: 6600
   },
-  100: { base: 42500, perM2: 8500 },
-  110: { base: 46750, perM2: 8500 },
-  120: { base: 51000, perM2: 8500 },
+  100: { base: 43500, perM2: 8700 },
+  110: { base: 48400, perM2: 8800 },
+  120: { base: 53400, perM2: 8900 },
   130: { base: 58500, perM2: 9000 },
-  140: { base: 63000, perM2: 9000 },
-  150: { base: 67500, perM2: 9000 },
-  160: { base: 76000, perM2: 9500 },
-  170: { base: 80750, perM2: 9500 },
+  140: { base: 63000, perM2: 9100 },
+  150: { base: 69000, perM2: 9200 },
+  160: { base: 74400, perM2: 9300 },
+  170: { base: 79900, perM2: 9400 },
   180: { base: 85500, perM2: 9500 }
 };
 
@@ -336,7 +341,19 @@ const govBannerPrices = {
   120: [
     { default: true, perM2: 12000 }
   ],
+  130: [
+    { default: true, perM2: 12000 }
+  ],
+  140: [
+    { default: true, perM2: 12000 }
+  ],
   150: [
+    { default: true, perM2: 12000 }
+  ],
+  160: [
+    { default: true, perM2: 12000 }
+  ],
+  170: [
     { default: true, perM2: 12000 }
   ],
   180: [
@@ -580,24 +597,174 @@ else if (type === 'banner') {
 
   // ✅ 100폭 이상은 perM2 사용
   else if (unionInfo.base && unionInfo.perM2) {
-      // ✅ 100폭 이상: base + 길이 비율 적용
-      const basePrice = unionInfo.base;
+        const basePrice = unionInfo.base;
 
-      if (lengthCm <= 100) {
+
+      // ✅ 폭 100
+    if ([100].includes(width)) {
+        if (lengthCm <= 100) {
         unitPrice = basePrice * 0.375;
       } else if (lengthCm <= 200) {
-        unitPrice = basePrice * 0.5;
+        unitPrice = basePrice * 0.67;
       } else if (lengthCm <= 300) {
-        unitPrice = basePrice * 0.75;
+        unitPrice = basePrice * 0.9;
       } else if (lengthCm <= 400) {
-        unitPrice = basePrice * 0.8;
+        unitPrice = basePrice * 0.9;
       } else if (lengthCm <= 500) {
         unitPrice = basePrice;
-      } else {
-        // ✅ 500cm 초과 시 제곱미터 계산
-        const area = (width / 100) * (lengthCm / 100);
-        unitPrice = unionInfo.perM2 * area;
-      }
+        } else {
+            const area = (width / 100) * (lengthCm / 100);
+            unitPrice = unionInfo.perM2 * area
+        }
+    }
+
+   // ✅ 폭 110
+    if ([110].includes(width)) {
+        if (lengthCm <= 100) {
+        unitPrice = basePrice * 0.375;
+      } else if (lengthCm <= 200) {
+        unitPrice = basePrice * 0.64;
+      } else if (lengthCm <= 300) {
+        unitPrice = basePrice * 0.9;
+      } else if (lengthCm <= 400) {
+        unitPrice = basePrice * 0.9;
+      } else if (lengthCm <= 500) {
+        unitPrice = basePrice;
+        } else {
+            const area = (width / 100) * (lengthCm / 100);
+            unitPrice = unionInfo.perM2 * area
+        }
+    }
+
+   // ✅ 폭 120
+    if ([120].includes(width)) {
+        if (lengthCm <= 100) {
+        unitPrice = basePrice * 0.375;
+      } else if (lengthCm <= 200) {
+        unitPrice = basePrice * 0.61;
+      } else if (lengthCm <= 300) {
+        unitPrice = basePrice * 0.84;
+      } else if (lengthCm <= 400) {
+        unitPrice = basePrice * 0.85;
+      } else if (lengthCm <= 500) {
+        unitPrice = basePrice;
+        } else {
+            const area = (width / 100) * (lengthCm / 100);
+            unitPrice = unionInfo.perM2 * area
+        }
+    }
+
+    // ✅ 폭 130
+    else if ([130].includes(width)) {
+        if (lengthCm <= 100) {
+            unitPrice = basePrice * 0.375;
+        } else if (lengthCm <= 200) {
+            unitPrice = basePrice * 0.58;
+        } else if (lengthCm <= 300) {
+            unitPrice = basePrice * 0.80;
+        } else if (lengthCm <= 400) {
+            unitPrice = basePrice * 0.82;
+        } else if (lengthCm <= 500) {
+            unitPrice = basePrice;
+        } else {
+            const area = (width / 100) * (lengthCm / 100);
+            unitPrice = unionInfo.perM2 * area;
+        }
+    }
+
+    // ✅ 폭 140
+    else if ([140].includes(width)) {
+        if (lengthCm <= 100) {
+            unitPrice = basePrice * 0.375;
+        } else if (lengthCm <= 200) {
+            unitPrice = basePrice * 0.54;
+        } else if (lengthCm <= 300) {
+            unitPrice = basePrice * 0.79;
+        } else if (lengthCm <= 400) {
+            unitPrice = basePrice * 0.8;
+        } else if (lengthCm <= 500) {
+            unitPrice = basePrice;
+        } else {
+            const area = (width / 100) * (lengthCm / 100);
+            unitPrice = unionInfo.perM2 * area;
+        }
+    }
+
+    // ✅ 폭 150
+    else if ([150].includes(width)) {
+        if (lengthCm <= 100) {
+            unitPrice = basePrice * 0.375;
+        } else if (lengthCm <= 200) {
+            unitPrice = basePrice * 0.53;
+        } else if (lengthCm <= 300) {
+            unitPrice = basePrice * 0.78;
+        } else if (lengthCm <= 400) {
+            unitPrice = basePrice * 0.81;
+        } else if (lengthCm <= 500) {
+            unitPrice = basePrice;
+        } else {
+            const area = (width / 100) * (lengthCm / 100);
+            unitPrice = unionInfo.perM2 * area;
+        }
+    }
+
+    // ✅ 폭 160
+    else if ([160].includes(width)) {
+        if (lengthCm <= 100) {
+            unitPrice = basePrice * 0.375;
+        } else if (lengthCm <= 200) {
+            unitPrice = basePrice * 0.52;
+        } else if (lengthCm <= 300) {
+            unitPrice = basePrice * 0.75;
+        } else if (lengthCm <= 400) {
+            unitPrice = basePrice * 0.8;
+        } else if (lengthCm <= 500) {
+            unitPrice = basePrice;
+        } else {
+            const area = (width / 100) * (lengthCm / 100);
+            unitPrice = unionInfo.perM2 * area;
+        }
+    }
+
+    // ✅ 폭 170
+    else if ([170].includes(width)) {
+        if (lengthCm <= 100) {
+            unitPrice = basePrice * 0.375;
+        } else if (lengthCm <= 200) {
+            unitPrice = basePrice * 0.51;
+        } else if (lengthCm <= 300) {
+            unitPrice = basePrice * 0.75;
+        } else if (lengthCm <= 400) {
+            unitPrice = basePrice * 0.8;
+        } else if (lengthCm <= 500) {
+            unitPrice = basePrice;
+        } else {
+            const area = (width / 100) * (lengthCm / 100);
+            unitPrice = unionInfo.perM2 * area;
+        }
+    }
+
+    // ✅ 폭 180
+    else if ([180].includes(width)) {
+        if (lengthCm <= 100) {
+            unitPrice = basePrice * 0.375;
+        } else if (lengthCm <= 200) {
+            unitPrice = basePrice * 0.5;
+        } else if (lengthCm <= 300) {
+            unitPrice = basePrice * 0.75;
+        } else if (lengthCm <= 400) {
+            unitPrice = basePrice * 0.8;
+        } else if (lengthCm <= 500) {
+            unitPrice = basePrice;
+        } else {
+            const area = (width / 100) * (lengthCm / 100);
+            unitPrice = unionInfo.perM2 * area;
+        }
+    }
+
+
+
+
     }
 
     totalPrice = roundToThousand(unitPrice * quantity);
@@ -654,10 +821,19 @@ if (Array.isArray(govInfo)) {
         totalPrice2 = unitPrice2 * quantity;
     }
 
-    // ✅ 천 원 단위 절삭 후 출력
-    document.getElementById('result').innerHTML =
-      `노조, 사회단체 : ${roundToThousand(totalPrice).toLocaleString()} 원<br>
-       관공서 외(부가세포함) : ${roundToThousand(totalPrice2).toLocaleString()} 원`;
+    // 노조와 관공서 외 금액이 10% 차이 안 날 경우 → 관공서 외 금액을 노조 금액 × 1.1로 설정
+const diffRate = Math.abs(totalPrice2 - totalPrice) / totalPrice;
+if (totalPrice > 0 && (totalPrice2 <= totalPrice || Math.abs(totalPrice2 - totalPrice) / totalPrice < 0.1)) {
+  totalPrice2 = roundToThousand(totalPrice * 1.1);
+}
+
+
+
+// ✅ 천 원 단위 절삭 후 출력
+document.getElementById('result').innerHTML =
+  `노조, 사회단체 : ${roundToThousand(totalPrice).toLocaleString()} 원<br>
+   관공서 외(카드,세금계산서) : ${roundToThousand(totalPrice2).toLocaleString()} 원`;
+
   }
 
 // 친환경현수막
