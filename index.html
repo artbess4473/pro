@@ -378,13 +378,13 @@ const govBannerPrices = {
 
 
 
-	// ✅ 피켓 가격 (정액)
+    // ✅ 피켓 가격 (정액)
         const pickPrices = { pick1: [3300, 8800], pick2: [5500, 11000], pick3: [8800, 15000] , pick4: [9000, 16500] , pick5: [11000, 25000] , pick6: [22000, 35000] , pick7: [30000, 33000] , pick8: [40000, 44000] , pick9: [6000, 66000] };
 
-	// ✅ 배너 가격 (정액)
-	const bannerItemPrices = { fabric: [30000, 33000], pet: [55000, 60000], indoor: [25000, 27000], outdoor: [30000, 35000],  eco: [40000, 44000] };
+    // ✅ 배너 가격 (정액)
+    const bannerItemPrices = { fabric: [30000, 33000], pet: [55000, 60000], indoor: [25000, 27000], outdoor: [30000, 35000],  eco: [40000, 44000] };
 
-	// ✅ 전단 가격 (정액)
+    // ✅ 전단 가격 (정액)
 const printPrices = { 
     leaflet: {
         a4: { single: 165000, double: 250000 },
@@ -521,14 +521,14 @@ function calculatePrice() {
 
         totalPrice = area * 11000 * quantity;        // 노조·사회단체
         totalPrice2 = area * 15000 * quantity;       // 관공서 외
-        const totalPrice5 = (area * 8200 * quantity) + 10000; // 서울디자인 출력시
+        const totalPrice5 = (area * 8200 * quantity) + 10000; // 출력만(서울디자인 출력)
         const totalPrice3 = area * 7000 * quantity;  // 하청가(서울디자인)
         const totalPrice4 = (area * 3000 * quantity) + 10000; // 하청가(하사랑)
 
         document.getElementById('result').innerHTML = `
             노조, 사회단체 : ${roundToThousand(totalPrice).toLocaleString()} 원<br>
             관공서 외(카드,세금계산서) : ${roundToThousand(totalPrice2).toLocaleString()} 원<br>
-            <span style="color:gray;">서울디자인 출력시 : ${roundToThousand(totalPrice5).toLocaleString()} 원</span><br>
+            <span style="color:gray;">출력만(서울디자인 출력) : ${roundToThousand(totalPrice5).toLocaleString()} 원</span><br>
             <span style="color:gray;">하청가(서울디자인) : ${roundToThousand(totalPrice3).toLocaleString()} 원</span><br>
             <span style="color:gray;">하청가(하사랑) : ${roundToThousand(totalPrice4).toLocaleString()} 원
             </span>
