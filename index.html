@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,7 +114,7 @@
 <body>
     <body translate="no">
     <div class="container">
-        <h2>밝은세상 (가)견적 <span style="font-size: 0.35em;">ver.250425</span></h2>
+        <h2>밝은세상 (가)견적 <span style="font-size: 0.35em;">ver.250428</span></h2>
         <div class="warning">
             최종견적은 총무팀장과 상의 후 확정.
         </div>
@@ -187,10 +188,21 @@
     <label for="printOnlyLength">길이 (cm)</label>
     <input type="number" id="printOnlyLength" placeholder="길이를 입력하세요" />
 
-    <label for="printOnlyWidth">폭 (cm)</label>
-    <input type="number" id="printOnlyWidth" placeholder="폭을 입력하세요" />
+    <label for="printOnlyWidth">폭 선택</label>
+    <select id="printOnlyWidth">
+        <option value="90">90 cm 이하</option>
+        <option value="100">100 cm</option>
+        <option value="110">110 cm</option>
+        <option value="120">120 cm</option>
+        <option value="130">130 cm</option>
+        <option value="140">140 cm</option>
+        <option value="150">150 cm</option>
+        <option value="160">160 cm</option>
+        <option value="170">170 cm</option>
+        <option value="180">180 cm</option>
+    </select>
 
-        <label for="printOnlyQuantity">수량</label>
+    <label for="printOnlyQuantity">수량</label>
     <input type="number" id="printOnlyQuantity" value="1" />
 </div>
 
@@ -505,25 +517,32 @@ function calculatePrice() {
     const quantity = parseInt(document.getElementById('largeQuantity')?.value) || 0;
 
     if (width > 0 && length > 0 && quantity > 0) {
-        const area = (width / 100) * (length / 100);  // m² 계산
+        const area = (width / 100) * (length / 100);  // ㎡ 계산
 
         totalPrice = area * 11000 * quantity;        // 노조·사회단체
         totalPrice2 = area * 15000 * quantity;       // 관공서 외
-        const totalPrice3 = area * 7000 * quantity;  // 하청가
+        const totalPrice5 = (area * 8200 * quantity) + 10000; // 서울디자인 출력시
+        const totalPrice3 = area * 7000 * quantity;  // 하청가(서울디자인)
+        const totalPrice4 = (area * 3000 * quantity) + 10000; // 하청가(하사랑)
 
         document.getElementById('result').innerHTML = `
             노조, 사회단체 : ${roundToThousand(totalPrice).toLocaleString()} 원<br>
             관공서 외(카드,세금계산서) : ${roundToThousand(totalPrice2).toLocaleString()} 원<br>
-            <span style="color:gray;">하청가(서울디자인) : ${roundToThousand(totalPrice3).toLocaleString()} 원</span>
+            <span style="color:gray;">서울디자인 출력시 : ${roundToThousand(totalPrice5).toLocaleString()} 원</span><br>
+            <span style="color:gray;">하청가(서울디자인) : ${roundToThousand(totalPrice3).toLocaleString()} 원</span><br>
+            <span style="color:gray;">하청가(하사랑) : ${roundToThousand(totalPrice4).toLocaleString()} 원
+            </span>
         `;
         return;
     }
 }
 
 
+
+
     // 출력(만)현수막
 else if (type === 'printOnlyBanner') {
-    const width = parseFloat(document.getElementById('printOnlyWidth')?.value) || 0;
+    const width = parseInt(document.getElementById('printOnlyWidth')?.value) || 0;
     const length = parseFloat(document.getElementById('printOnlyLength')?.value) || 0;
     const quantity = parseInt(document.getElementById('printOnlyQuantity')?.value) || 0;
 
