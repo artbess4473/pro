@@ -201,36 +201,35 @@
     }
     const isAdmin = currentUser && adminEmails.includes(currentUser.email);
      
-     const formatDate = iso => {
-    if (!iso) return "-";
-    const date = new Date(iso);
-    const days = ['일', '월', '화', '수', '목', '금', '토'];
-    const day = days[date.getDay()];
-    const hour = String(date.getHours()).padStart(2, '0');
-    const minute = String(date.getMinutes()).padStart(2, '0');
-    return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day}) <span class="time-highlight">${hour}:${minute}</span>`;
+// ✅ formatDate 함수는 displayRecords 바깥 최상단에 정의되어 있어도 됨
+const formatDate = iso => {
+  if (!iso) return "-";
+  const date = new Date(iso);
+  const days = ['일', '월', '화', '수', '목', '금', '토'];
+  const day = days[date.getDay()];
+  const hour = String(date.getHours()).padStart(2, '0');
+  const minute = String(date.getMinutes()).padStart(2, '0');
+  return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day}) <span class="time-highlight">${hour}:${minute}</span>`;
 };
 
+function displayRecords(records) {
+  recordsDiv.innerHTML = '';
+  recordsDiv.style.display = "block";
+  if (records.length === 0) {
+    recordsDiv.textContent = "기록이 없습니다.";
+    return;
+  }
 
+  const isAdmin = currentUser && adminEmails.includes(currentUser.email);
 
-    records.forEach(record => {
+  records.forEach(record => {
     if (isAdmin || (currentUser && record.uid === currentUser.uid)) {
-        const div = document.createElement("div");
-        const alias = emailAliasMap[record.email] || "익명";
-
-        // ✅ ✅ 반드시 둘 다 formatDate 사용!
-        div.innerHTML = `${alias} | 출근: ${formatDate(record.checkIn)} | 퇴근: ${formatDate(record.checkOut)}`;
-
-
-        recordsDiv.appendChild(div);
+      const div = document.createElement("div");
+      const alias = emailAliasMap[record.email] || "익명";
+      div.innerHTML = `${alias} | 출근: ${formatDate(record.checkIn)} | 퇴근: ${formatDate(record.checkOut)}`;
+      recordsDiv.appendChild(div);
     }
-});
-
-
-
-            recordsDiv.appendChild(div);
-        }
-    });
+  });
 }
 
         function fetchLast3DaysRecords(isAdmin) {
