@@ -227,16 +227,29 @@ function displayRecords(records) {
 
   const isAdmin = currentUser && adminEmails.includes(currentUser.email);
 
+  // ✅ UID+날짜 기준으로 중복 제거 (가장 마지막 기록만 남김)
+  const uniqueMap = new Map();
   records.forEach(record => {
+    const dateKey = (record.checkIn || record.checkOut || "").split("T")[0];
+    const uidKey = record.uid || "";
+    if (!dateKey || !uidKey) return;
+    uniqueMap.set(`${uidKey}_${dateKey}`, record);
+  });
+
+  const uniqueRecords = Array.from(uniqueMap.values());
+
+  uniqueRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
+
+  uniqueRecords.forEach(record => {
     if (isAdmin || (currentUser && record.uid === currentUser.uid)) {
       const div = document.createElement("div");
       const alias = emailAliasMap[record.email] || "익명";
       div.innerHTML = `${alias} | 출근: ${record.checkIn ? formatDate(record.checkIn) : '미기록'} | 퇴근: ${record.checkOut ? formatDate(record.checkOut) : '미기록'}`;
-
       recordsDiv.appendChild(div);
     }
   });
 }
+
 
 
         function fetchLast3DaysRecords(isAdmin) {
@@ -277,32 +290,43 @@ function displayRecords(records) {
 }
 
         function recordCheckIn() {
-            const now = new Date();
-            const today = now.toISOString().split("T")[0];
+  const now = new Date();
+  const today = now.toISOString().split("T")[0];
 
-            attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
-                let checkInCountToday = 0;
-                snapshot.forEach(child => {
-                    const record = child.val();
-                    if (record.checkIn && record.checkIn.startsWith(today)) {
-                        checkInCountToday++;
-                    }
-                });
+  attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
+    let lastCheckInKey = null;
 
-                if (checkInCountToday >= 1 && !confirm("이미 출근 기록이 있습니다. 재입력하시겠어요?")) {
-                    return;
-                }
+    snapshot.forEach(child => {
+      const record = child.val();
+      const key = child.key;
 
-                attendanceRef.push({
-                    uid: auth.currentUser.uid,
-                    name: auth.currentUser.displayName,
-                    email: auth.currentUser.email,
-                    checkIn: now.toISOString(),
-                    checkOut: null
-                });
-                alert("출근 기록 저장 완료");
-            });
-        }
+      if (record.checkIn && record.checkIn.startsWith(today)) {
+        lastCheckInKey = key;
+      }
+    });
+
+    if (lastCheckInKey) {
+      if (confirm("이미 출근 기록이 있습니다. 수정하시겠어요?")) {
+        database.ref(`attendance/${lastCheckInKey}`).update({ checkIn: now.toISOString() }).then(() => {
+          alert("출근 시간 수정 완료");
+          fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+        });
+      }
+    } else {
+      attendanceRef.push({
+        uid: auth.currentUser.uid,
+        name: auth.currentUser.displayName,
+        email: auth.currentUser.email,
+        checkIn: now.toISOString(),
+        checkOut: null
+      }).then(() => {
+        alert("출근 기록 저장 완료");
+        fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+      });
+    }
+  });
+}
+
 
         function recordCheckOut() {
   const now = new Date();
