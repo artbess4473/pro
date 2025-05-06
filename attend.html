@@ -239,16 +239,19 @@ function displayRecords(records) {
     const isAdmin = currentUser && adminEmails.includes(currentUser.email);
 
     records.forEach(record => {
-        // ✅ 출근 또는 퇴근 기록이 있는 경우에만 표시
-        if (record.checkIn || record.checkOut) {
-            if (isAdmin || (currentUser && record.uid === currentUser.uid)) {
-                const div = document.createElement("div");
-                const alias = emailAliasMap[record.email] || "익명";
-                div.innerHTML = `${alias} | 출근: ${record.checkIn ? formatDateNormal(record.checkIn) : '미기록'} | 퇴근: ${record.checkOut ? formatDateLate(record.checkOut) : '미기록'}`;
-                recordsDiv.appendChild(div);
-            }
+    const hasValidCheckIn = record.checkIn && typeof record.checkIn === "string" && record.checkIn.includes("T");
+    const hasValidCheckOut = record.checkOut && typeof record.checkOut === "string" && record.checkOut.includes("T");
+
+    if (hasValidCheckIn || hasValidCheckOut) {
+        if (isAdmin || (currentUser && record.uid === currentUser.uid)) {
+            const div = document.createElement("div");
+            const alias = emailAliasMap[record.email] || "익명";
+            div.innerHTML = `${alias} | 출근: ${hasValidCheckIn ? formatDateNormal(record.checkIn) : '미기록'} | 퇴근: ${hasValidCheckOut ? formatDateLate(record.checkOut) : '미기록'}`;
+            recordsDiv.appendChild(div);
         }
-    });
+    }
+});
+
 
     // ✅ 관리자인데 표시할 기록이 없는 경우 메시지 표시
     if (isAdmin && recordsDiv.innerHTML === '') {
