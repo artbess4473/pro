@@ -415,11 +415,14 @@ function displayRecords(records) {
         snapshot.forEach(child => {
             const record = child.val();
 
-            const alias = emailAliasMap[record.email]?.toLowerCase() || "";
-            const idMatch = !keyword || keyword === "all" ||
-                            (record.email?.toLowerCase().includes(keyword)) ||
-                            (record.name?.toLowerCase().includes(keyword)) ||
-                            alias.includes(keyword);
+            const alias = (emailAliasMap[record.email] || "").toLowerCase();
+            const keywordLower = keyword.toLowerCase();
+
+            const idMatch = !keywordLower || keywordLower === "all" ||
+    (record.email?.toLowerCase().includes(keywordLower)) ||
+    (record.name?.toLowerCase().includes(keywordLower)) ||
+    alias.includes(keywordLower);
+
 
             const checkInDate = isValidDate(record.checkIn) ? new Date(record.checkIn).toISOString().split("T")[0] : "";
             const checkOutDate = isValidDate(record.checkOut) ? new Date(record.checkOut).toISOString().split("T")[0] : "";
