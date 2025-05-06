@@ -390,8 +390,14 @@ function displayRecords(records) {
     const month = searchMonthInput.value; //YYYY-MM
     const date = document.getElementById("searchMonthIdDate").value; //YYYY-MM-DD
     const keyword = searchIdInput.value.trim().toLowerCase();
+    const isAdmin = adminEmails.includes(currentUser.email);
+    let query = attendanceRef;
 
-    attendanceRef.once("value", snapshot => {
+    if (!isAdmin) {
+        query = query.orderByChild("uid").equalTo(currentUser.uid); // 일반 사용자는 자신의 UID로 검색 범위 제한
+    }
+
+    query.once("value", snapshot => {
         const filteredRecords = [];
 
         snapshot.forEach(child => {
@@ -409,15 +415,19 @@ function displayRecords(records) {
             const dateMatch = !date || checkInDate === date || checkOutDate === date;
             const monthMatch = !month || checkInDate.startsWith(month) || checkOutDate.startsWith(month);
 
-            // ✅ 출근 또는 퇴근 기록이 있는 경우에만 필터링
-            const hasAttendance = record.checkIn || record.checkOut;
-
-            if (idMatch && (date ? dateMatch : monthMatch) && hasAttendance) {
-                filteredRecords.push(record);
+            // ✅ 출근 또는 퇴근 기록이 하나라도 있는 경우에만 필터링 (관리자용)
+            if (isAdmin) {
+                if (idMatch && (date ? dateMatch : monthMatch) && (record.checkIn || record.checkOut)) {
+                    filteredRecords.push(record);
+                }
+            } else {
+                // 일반 사용자는 기존 필터링 유지 (본인 기록만 표시)
+                if (idMatch && (date ? dateMatch : monthMatch) && (record.checkIn || record.checkOut)) {
+                    filteredRecords.push(record);
+                }
             }
         });
 
-        // ✅ 최신순 정렬 (선택)
         filteredRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
         displayRecords(filteredRecords);
     });
@@ -481,7 +491,11 @@ function fetchAllRecords() {
     attendanceRef.once("value", snapshot => {
         const records = [];
         snapshot.forEach(child => {
-            records.push(child.val());
+            const record = child.val();
+            // ✅ 출근 또는 퇴근 기록이 하나라도 있는 경우만 추가
+            if (record.checkIn || record.checkOut) {
+                records.push(record);
+            }
         });
         displayRecords(records);
     }).catch(error => {
