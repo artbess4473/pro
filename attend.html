@@ -58,12 +58,8 @@
 
     <div id="adminMenu">
         <h2>👑 관리자 메뉴</h2>
-        <h3>기록 다운로드</h3>
-        <button id="downloadAllBtn">전체 다운로드 (CSV)</button>
-        <label>월별 다운로드: <input type="month" id="downloadMonth"></label>
-        <button id="downloadMonthBtn">월별 다운로드 (CSV)</button>
-        <label>이름별 다운로드: <input type="text" id="downloadName"></label>
-        <button id="downloadNameBtn">이름별 다운로드 (CSV)</button>
+        <h3>출퇴근 기록</h3>
+        <p>관리자 권한으로 출퇴근 기록을 조회할 수 있습니다.</p>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -94,11 +90,6 @@
         const userInfo = document.getElementById('userInfo');
         const recordsDiv = document.getElementById('records');
         const adminMenu = document.getElementById('adminMenu');
-        const downloadAllBtn = document.getElementById('downloadAllBtn');
-        const downloadMonthInput = document.getElementById('downloadMonth');
-        const downloadMonthBtn = document.getElementById('downloadMonthBtn');
-        const downloadNameInput = document.getElementById('downloadName');
-        const downloadNameBtn = document.getElementById('downloadNameBtn');
 
         let currentUser = null;
         const adminEmails = ['artbess4473@gmail.com', 'good2bad2@gmail.com'];
@@ -111,8 +102,8 @@
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLng = (lng2 - lng1) * Math.PI / 180;
             const a = Math.sin(dLat/2)**2 +
-                        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                        Math.sin(dLng/2)**2;
+                            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                            Math.sin(dLng/2)**2;
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
 
@@ -213,53 +204,6 @@
                 div.textContent = `${r.name || r.email} | 출근: ${r.checkIn || '-'} | 퇴근: ${r.checkOut || '-'}`;
                 recordsDiv.appendChild(div);
             });
-        });
-
-        function downloadRecords(filterCallback, filename) {
-    recordsRef.once('value', snapshot => {
-        let csv = '이름,이메일,출근,퇴근\n';
-        snapshot.forEach(child => {
-            const r = child.val();
-            if (filterCallback(r)) {
-                csv += `${r.name || ''},${r.email || ''},${r.checkIn || ''},${r.checkOut || ''}\n`;
-            }
-        });
-
-        // UTF-8 BOM 추가
-        const bom = '\uFEFF';
-        const csvWithBom = bom + csv;
-
-        const blob = new Blob([csvWithBom], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    });
-}
-
-        downloadAllBtn.addEventListener('click', () => {
-            downloadRecords(() => true, '전체_출퇴근기록.csv');
-        });
-
-        downloadMonthBtn.addEventListener('click', () => {
-            const selectedMonth = downloadMonthInput.value;
-            if (selectedMonth) {
-                downloadRecords(r => r.checkIn && r.checkIn.startsWith(selectedMonth), `${selectedMonth}_출퇴근기록.csv`);
-            } else {
-                alert("다운로드할 월을 선택해 주세요.");
-            }
-        });
-
-        downloadNameBtn.addEventListener('click', () => {
-            const selectedName = downloadNameInput.value.toLowerCase();
-            if (selectedName) {
-                downloadRecords(r => r.name && r.name.toLowerCase().includes(selectedName), `${selectedName}_출퇴근기록.csv`);
-            } else {
-                alert("다운로드할 이름을 입력해 주세요.");
-            }
         });
     </script>
 </body>
