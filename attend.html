@@ -41,8 +41,9 @@
             border-radius: 10px;
             display: none;
         }
-        #adminMenu label, #adminMenu button {
+        #adminMenu h2, #adminMenu h3, #adminMenu p, #adminMenu button, #adminMenu label, #adminMenu input {
             margin-right: 10px;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -58,8 +59,12 @@
 
     <div id="adminMenu">
         <h2>👑 관리자 메뉴</h2>
-        <h3>출퇴근 기록</h3>
-        <p>관리자 권한으로 출퇴근 기록을 조회할 수 있습니다.</p>
+        <h3>출퇴근 기록 조회</h3>
+        <button id="showAllBtn">전체 기록 보기</button><br>
+        <label>월별 검색: <input type="month" id="searchMonth"></label>
+        <button id="searchMonthBtn">월별 검색</button><br>
+        <label>아이디 검색: <input type="text" id="searchId"></label>
+        <button id="searchIdBtn">아이디 검색</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -90,6 +95,11 @@
         const userInfo = document.getElementById('userInfo');
         const recordsDiv = document.getElementById('records');
         const adminMenu = document.getElementById('adminMenu');
+        const showAllBtn = document.getElementById('showAllBtn');
+        const searchMonthInput = document.getElementById('searchMonth');
+        const searchMonthBtn = document.getElementById('searchMonthBtn');
+        const searchIdInput = document.getElementById('searchId');
+        const searchIdBtn = document.getElementById('searchIdBtn');
 
         let currentUser = null;
         const adminEmails = ['artbess4473@gmail.com', 'good2bad2@gmail.com'];
@@ -196,14 +206,71 @@
             });
         });
 
-        recordsRef.on('value', snapshot => {
+        function displayRecords(records) {
             recordsDiv.innerHTML = '';
-            snapshot.forEach(child => {
-                const r = child.val();
+            records.forEach(record => {
                 const div = document.createElement('div');
-                div.textContent = `${r.name || r.email} | 출근: ${r.checkIn || '-'} | 퇴근: ${r.checkOut || '-'}`;
+                div.textContent = `${record.name || '이름 없음'} (${record.email}) | 출근: ${record.checkIn || '-'} | 퇴근: ${record.checkOut || '-'}`;
                 recordsDiv.appendChild(div);
             });
+        }
+
+        recordsRef.on('value', snapshot => {
+            const allRecords = [];
+            snapshot.forEach(child => {
+                allRecords.push(child.val());
+            });
+            // 초기 로드시 전체 기록 표시
+            displayRecords(allRecords);
+            // 이후 검색 버튼 클릭 시 필터링하여 표시
+        });
+
+        showAllBtn.addEventListener('click', () => {
+            recordsRef.once('value', snapshot => {
+                const allRecords = [];
+                snapshot.forEach(child => {
+                    allRecords.push(child.val());
+                });
+                displayRecords(allRecords);
+            });
+        });
+
+        searchMonthBtn.addEventListener('click', () => {
+            const selectedMonth = searchMonthInput.value;
+            if (selectedMonth) {
+                recordsRef.once('value', snapshot => {
+                    const filteredRecords = [];
+                    snapshot.forEach(child => {
+                        const record = child.val();
+                        if (record.checkIn && record.checkIn.startsWith(selectedMonth)) {
+                            filteredRecords.push(record);
+                        }
+                    });
+                    displayRecords(filteredRecords);
+                });
+            } else {
+                alert("검색할 월을 선택해 주세요.");
+            }
+        });
+
+        searchIdBtn.addEventListener('click', () => {
+            const searchedId = searchIdInput.value.trim();
+            if (searchedId) {
+                recordsRef.once('value', snapshot => {
+                    const filteredRecords = [];
+                    snapshot.forEach(child => {
+                        const record = child.val();
+                        if (record.email && record.email.toLowerCase().includes(searchedId.toLowerCase())) {
+                            filteredRecords.push(record);
+                        } else if (record.uid && record.uid.includes(searchedId)) { // UID로도 검색 가능하도록 추가
+                            filteredRecords.push(record);
+                        }
+                    });
+                    displayRecords(filteredRecords);
+                });
+            } else {
+                alert("검색할 아이디 (이메일 주소 또는 UID)를 입력해 주세요.");
+            }
         });
     </script>
 </body>
