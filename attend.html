@@ -68,9 +68,13 @@
         margin-right: 10px;
         }
         .time-highlight {
-            color: navy;
-            font-weight: bold;
-        }
+        color: navy;
+        font-weight: bold;
+    }
+    .time-highlight-late {
+        color: red;
+        font-weight: bold;
+    }
 
         #records div {
         margin-bottom: 6px;
@@ -222,7 +226,8 @@ const formatDateLate = iso => {
     const day = days[date.getDay()];
     hour = String(hour).padStart(2, '0');
 
-    return `<span style="color: gray; font-weight: bold;">${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day})</span> <span class="time-highlight">${hour}:${minute}</span>`;
+    return `<span style="color: gray; font-weight: bold;">${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day})</span> <span class="time-highlight-late">${hour}:${minute}</span>`;
+
 };
 
 
