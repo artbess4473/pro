@@ -231,7 +231,8 @@ function displayRecords(records) {
     if (isAdmin || (currentUser && record.uid === currentUser.uid)) {
       const div = document.createElement("div");
       const alias = emailAliasMap[record.email] || "익명";
-      div.innerHTML = `${alias} | 출근: ${formatDate(record.checkIn)} | 퇴근: ${formatDate(record.checkOut)}`;
+      div.innerHTML = `${alias} | 출근: ${record.checkIn ? formatDate(record.checkIn) : '미기록'} | 퇴근: ${record.checkOut ? formatDate(record.checkOut) : '미기록'}`;
+
       recordsDiv.appendChild(div);
     }
   });
