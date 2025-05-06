@@ -192,16 +192,7 @@
             }
         }
 
-        function displayRecords(records) {
-    recordsDiv.innerHTML = '';
-    recordsDiv.style.display = "block";
-    if (records.length === 0) {
-        recordsDiv.textContent = "기록이 없습니다.";
-        return;
-    }
-    const isAdmin = currentUser && adminEmails.includes(currentUser.email);
-     
-// ✅ formatDate 함수는 displayRecords 바깥 최상단에 정의되어 있어도 됨
+        // ✅ formatDate 함수는 displayRecords 바깥에 정의
 const formatDate = iso => {
   if (!iso) return "-";
   const date = new Date(iso);
@@ -212,6 +203,7 @@ const formatDate = iso => {
   return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day}) <span class="time-highlight">${hour}:${minute}</span>`;
 };
 
+// ✅ displayRecords는 한 번만 정의
 function displayRecords(records) {
   recordsDiv.innerHTML = '';
   recordsDiv.style.display = "block";
@@ -231,6 +223,7 @@ function displayRecords(records) {
     }
   });
 }
+
 
         function fetchLast3DaysRecords(isAdmin) {
     const now = new Date();
