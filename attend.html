@@ -440,7 +440,11 @@ function displayRecords(records) {
             }
         });
 
-        filteredRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
+        filteredRecords.sort((a, b) => {
+    const aliasA = (emailAliasMap[a.email] || "").toLowerCase();
+    const aliasB = (emailAliasMap[b.email] || "").toLowerCase();
+    return aliasA.localeCompare(aliasB); // 가나다순 정렬
+});
         displayRecords(filteredRecords);
     });
 }
