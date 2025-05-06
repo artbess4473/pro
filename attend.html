@@ -315,11 +315,15 @@ function displayRecords(records) {
       const key = child.key;
 
       if (record.checkIn) {
-        const checkInDateStr = new Date(record.checkIn).toISOString().split("T")[0];
-        if (checkInDateStr === todayDateStr) {
-          lastCheckInKey = key;
-        }
-      }
+  const parsedDate = new Date(record.checkIn);
+  if (!isNaN(parsedDate)) {
+    const checkInDateStr = parsedDate.toISOString().split("T")[0];
+    if (checkInDateStr === todayDateStr) {
+      lastCheckInKey = key;
+    }
+  }
+}
+
     });
 
     if (lastCheckInKey) {
