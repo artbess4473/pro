@@ -363,19 +363,26 @@ displayRecords(records);
 
             attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
                 let lastUnfinishedKey = null;
-                let lastCheckOutKey = null;
+let lastUnfinishedTime = null;
+let lastCheckOutKey = null;
 
-                snapshot.forEach(child => {
-                    const record = child.val();
-                    const key = child.key;
+snapshot.forEach(child => {
+    const record = child.val();
+    const key = child.key;
 
-                    if (record.checkIn && record.checkIn.startsWith(today) && !record.checkOut) {
-                        lastUnfinishedKey = key;
-                    }
-                    if (record.checkOut && record.checkOut.startsWith(today)) {
-                        lastCheckOutKey = key;
-                    }
-                });
+    if (record.checkIn && record.checkIn.startsWith(today) && !record.checkOut) {
+        const time = new Date(record.checkIn).getTime();
+        if (!lastUnfinishedTime || time > lastUnfinishedTime) {
+            lastUnfinishedTime = time;
+            lastUnfinishedKey = key;  // ✅ 가장 최근 출근 기록을 저장
+        }
+    }
+
+    if (record.checkOut && record.checkOut.startsWith(today)) {
+        lastCheckOutKey = key;
+    }
+});
+
 
                 if (lastUnfinishedKey) {
                     // 출근했지만 퇴근 안 된 기록이 있으면 여기에 퇴근시간 추가
