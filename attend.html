@@ -67,8 +67,16 @@
         .adminInput {
         margin-right: 10px;
         }
-        
-        
+            .time-highlight {
+      color: navy;
+      font-weight: bold;
+    }
+
+    #records div {
+      margin-bottom: 6px;
+      line-height: 1.6;
+    }
+
     </style>
 </head>
 <body>
@@ -211,7 +219,8 @@
         const alias = emailAliasMap[record.email] || "익명";
 
         // ✅ ✅ 반드시 둘 다 formatDate 사용!
-        div.textContent = `${alias} | 출근: ${formatDate(record.checkIn)} | 퇴근: ${formatDate(record.checkOut)}`;
+        div.innerHTML = `${alias} | 출근: ${formatDate(record.checkIn)} | 퇴근: ${formatDate(record.checkOut)}`;
+
 
         recordsDiv.appendChild(div);
     }
