@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>출퇴근 기록 (위치 기반 + 관리자)</title>
+    <meta charset="UTF-8" />
+    <title>✨ 밝은+랄라 출퇴근 기록 ✨ (위치 기반 + 관리자)</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -26,6 +26,12 @@
         button:hover {
             background-color: #0097e6;
         }
+        #loginBtn, #logoutBtn {
+            background-color: #808080;
+        }
+        #loginBtn:hover, #logoutBtn:hover {
+            background-color: #696969;
+        }
         #userInfo {
             margin-top: 10px;
             font-weight: bold;
@@ -33,6 +39,7 @@
         }
         #records {
             margin-top: 30px;
+            display: none;
         }
         #adminMenu {
             margin-top: 30px;
@@ -41,16 +48,30 @@
             border-radius: 10px;
             display: none;
         }
-        #adminMenu h2, #adminMenu h3, #adminMenu p, #adminMenu button, #adminMenu label, #adminMenu input {
-            margin-right: 10px;
-            margin-bottom: 5px;
+        #adminMenu button {
+            padding: 6px 12px;
+            font-size: 14px;
+            background-color: #44bd32;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
+        #adminMenu button:hover {
+            background-color: #2f9e20;
+        }
+        #adminMenu input {
+            font-size: 14px;
+            padding: 4px 8px;
+        }
+        .adminInput {
+        margin-right: 10px;
     </style>
 </head>
 <body>
-    <h1>출퇴근 기록</h1>
+    <h1>✨ 밝은+랄라 출퇴근 기록 ✨</h1>
     <button id="loginBtn">🔐 Google 로그인</button>
-    <button id="logoutBtn" style="display:none;">🚪 로그아웃</button>
+    <button id="logoutBtn" style="display: none">🚪 로그아웃</button>
     <button id="checkInBtn" disabled>출근</button>
     <button id="checkOutBtn" disabled>퇴근</button>
 
@@ -59,73 +80,89 @@
 
     <div id="adminMenu">
         <h2>👑 관리자 메뉴</h2>
-        <h3>출퇴근 기록 조회</h3>
-        <button id="showAllBtn">전체 기록 보기</button><br>
-        <label>월별 검색: <input type="month" id="searchMonth"></label>
-        <button id="searchMonthBtn">월별 검색</button><br>
-        <label>아이디 검색: <input type="text" id="searchId"></label>
-        <button id="searchIdBtn">아이디 검색</button>
+        <label class="adminInput">월: <input type="month" id="searchMonthIdMonth" /></label>
+        <label class="adminInput">날짜: <input type="date" id="searchMonthIdDate" /></label>
+        <label class="adminInput">아이디(all가능): <input type="text" id="searchMonthIdEmail" /></label>
+        <button id="searchMonthIdBtn">월+ID 검색</button>
+
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyD0jEjDD_W1lj8C9hEMEQahzMroohEAn8w",
             authDomain: "artattend.firebaseapp.com",
+            databaseURL: "https://artattend-default-rtdb.firebaseio.com/",
             projectId: "artattend",
             storageBucket: "artattend.appspot.com",
             messagingSenderId: "716771305600",
             appId: "1:716771305600:web:16e352922e62592ed51e65",
-            measurementId: "G-VMJY29DZ5B",
-            databaseURL: "https://artattend-default-rtdb.firebaseio.com/"
+            measurementId: "G-VMJY29DZ5B"
         };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
-        const recordsRef = database.ref('attendance');
+        const attendanceRef = database.ref("attendance");
 
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const checkInBtn = document.getElementById('checkInBtn');
-        const checkOutBtn = document.getElementById('checkOutBtn');
-        const userInfo = document.getElementById('userInfo');
-        const recordsDiv = document.getElementById('records');
-        const adminMenu = document.getElementById('adminMenu');
-        const showAllBtn = document.getElementById('showAllBtn');
-        const searchMonthInput = document.getElementById('searchMonth');
-        const searchMonthBtn = document.getElementById('searchMonthBtn');
-        const searchIdInput = document.getElementById('searchId');
-        const searchIdBtn = document.getElementById('searchIdBtn');
+        // ✅ 1. 이메일 치환 이름 매핑
+        const emailAliasMap = {
+  "yeseul9405@gmail.com": "랄라+강예슬",
+  "artbes4473@gmail.com": "랄라+곽진우",
+  "dlsvlslxm410@gmail.com": "랄라+김벼리",
+  "sppol93@gmail.com": "랄라+서보령",
+  "ya55218435@gmail.com": "랄라+이은정",
+  "bomsun28@gmail.com": "랄라+조현지",
+  "9seungbone@gmail.com": "밝은+구승은",
+  "gim260641@gmila.com": "밝은+김미화",
+  "apple68691@gmail.com": "밝은+김성빈",
+  "good2bad1@gmail.com": "밝은+김영란",
+  "nhr1105@gmail.com": "밝은+남효리",
+  "tjdals.3572.99@gmail.com": "밝은+박성민",
+  "wlgml1176@gmail.com": "밝은+이지희",
+  "duwn77200@gmail.com": "밝은+조연주",
+  "herbo75@gmali.com": "밝은+허보은",
+  "iwg1hsh@gmail.com": "밝은+허신혜"
+};
 
-        let currentUser = null;
-        const adminEmails = ['artbess4473@gmail.com', 'good2bad2@gmail.com'];
 
+        const loginBtn = document.getElementById("loginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const checkInBtn = document.getElementById("checkInBtn");
+        const checkOutBtn = document.getElementById("checkOutBtn");
+        const userInfoDiv = document.getElementById("userInfo");
+        const recordsDiv = document.getElementById("records");
+        const adminMenuDiv = document.getElementById("adminMenu");
+
+        const searchMonthInput = document.getElementById("searchMonthIdMonth");
+        const searchIdInput = document.getElementById("searchMonthIdEmail");
+        const searchMonthIdBtn = document.getElementById("searchMonthIdBtn");
+
+        const adminEmails = ["artbess4473@gmail.com", "good2bad2@gmail.com"];
         const companyLat = 35.577253;
         const companyLng = 129.332917;
+
+        let currentUser = null; // 현재 로그인한 사용자 정보 저장
 
         function getDistance(lat1, lng1, lat2, lng2) {
             const R = 6371000;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLng = (lng2 - lng1) * Math.PI / 180;
-            const a = Math.sin(dLat/2)**2 +
-                            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                            Math.sin(dLng/2)**2;
+            const a = Math.sin(dLat / 2) ** 2 +
+                        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                        Math.sin(dLng / 2) ** 2;
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
 
         function enableButtonsByLocation() {
             const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-            if (isMobile && 'geolocation' in navigator) {
+            if (isMobile && navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     position => {
                         const { latitude, longitude } = position.coords;
-                        const dist = getDistance(latitude, longitude, companyLat, companyLng);
-                        if (dist <= 100) {
+                        if (getDistance(latitude, longitude, companyLat, companyLng) <= 100) {
                             checkInBtn.disabled = false;
                             checkOutBtn.disabled = false;
                         } else {
@@ -134,6 +171,8 @@
                     },
                     error => {
                         alert("위치 정보를 가져올 수 없습니다. 위치 권한을 허용해 주세요.");
+                        checkInBtn.disabled = false;
+                        checkOutBtn.disabled = false;
                     }
                 );
             } else {
@@ -142,136 +181,194 @@
             }
         }
 
-        loginBtn.addEventListener('click', () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(error => alert("로그인 실패: " + error.message));
-        });
+        function displayRecords(records) {
+    recordsDiv.innerHTML = '';
+    recordsDiv.style.display = "block";
+    if (records.length === 0) {
+        recordsDiv.textContent = "기록이 없습니다.";
+        return;
+    }
 
-        logoutBtn.addEventListener('click', () => {
-            auth.signOut().then(() => {
-                alert("로그아웃 되었습니다.");
-                location.reload();
-            });
-        });
+    const isAdmin = currentUser && adminEmails.includes(currentUser.email);
 
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                userInfo.textContent = `👋 ${user.displayName} (${user.email})`;
-                loginBtn.style.display = 'none';
-                logoutBtn.style.display = 'inline-block';
+    records.forEach(record => {
+        if (isAdmin || (currentUser && record.uid === currentUser.uid)) {
+            const div = document.createElement("div");
+            div.textContent = `${record.name || "익명"} (${record.email}) | 출근: ${record.checkIn || "-"} | 퇴근: ${record.checkOut || "-"}`;
+            recordsDiv.appendChild(div);
+        }
+    });
+}
 
-                enableButtonsByLocation();
+        function fetchLast3DaysRecords(isAdmin) {
+    const now = new Date();
+    const past = new Date(now);
+    past.setDate(now.getDate() - 2);
+    const startDateISO = past.toISOString().split("T")[0];
+    const endDateISO = now.toISOString().split("T")[0];
 
-                if (adminEmails.includes(user.email)) {
-                    adminMenu.style.display = 'block';
-                } else {
-                    adminMenu.style.display = 'none';
+    attendanceRef.orderByChild('checkIn') // 인덱싱 활용
+        .startAt(startDateISO)
+        .endAt(endDateISO + '\uf8ff') // 유니코드 범위 끝까지 검색
+        .once("value", snapshot => {
+            const filteredRecords = [];
+            snapshot.forEach(child => {
+                const record = child.val();
+                if (isAdmin || record.uid === currentUser.uid) { // ✅ 관리자거나 자신의 UID와 일치하는 경우
+                    filteredRecords.push(record);
                 }
-            } else {
-                userInfo.textContent = '';
-                loginBtn.style.display = 'inline-block';
-                logoutBtn.style.display = 'none';
-                checkInBtn.disabled = true;
-                checkOutBtn.disabled = true;
-                adminMenu.style.display = 'none';
-            }
-        });
-
-        checkInBtn.addEventListener('click', () => {
-            const now = new Date().toLocaleString();
-            recordsRef.push({
-                uid: currentUser.uid,
-                name: currentUser.displayName,
-                email: currentUser.email,
-                checkIn: now,
-                checkOut: null
             });
-            alert("출근 기록이 저장되었습니다.");
-        });
 
-        checkOutBtn.addEventListener('click', () => {
-            const now = new Date().toLocaleString();
-            recordsRef.orderByChild('uid').equalTo(currentUser.uid).once('value', snapshot => {
-                let updated = false;
+            attendanceRef.orderByChild('checkOut') // 퇴근 기준도 고려
+                .startAt(startDateISO)
+                .endAt(endDateISO + '\uf8ff')
+                .once("value", snapshotOut => {
+                    snapshotOut.forEach(childOut => {
+                        const recordOut = childOut.val();
+                        const isAlreadyIncluded = filteredRecords.some(rec => rec.uid === recordOut.uid && rec.checkIn === recordOut.checkIn && rec.checkOut === recordOut.checkOut);
+                        if ((isAdmin || recordOut.uid === currentUser.uid) && !isAlreadyIncluded && (recordOut.checkIn || recordOut.checkOut)) { // ✅ 관리자거나 자신의 UID와 일치하는 경우
+                            filteredRecords.push(recordOut);
+                        }
+                    });
+                    // 시간 순으로 정렬 (선택 사항)
+                    filteredRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
+                    displayRecords(filteredRecords);
+                });
+        });
+}
+
+        function recordCheckIn() {
+            const now = new Date();
+            const today = now.toISOString().split("T")[0];
+
+            attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
+                let checkInCountToday = 0;
                 snapshot.forEach(child => {
-                    const data = child.val();
-                    if (!data.checkOut) {
-                        child.ref.update({ checkOut: now });
-                        updated = true;
-                        alert("퇴근 기록이 저장되었습니다.");
+                    const record = child.val();
+                    if (record.checkIn && record.checkIn.startsWith(today)) {
+                        checkInCountToday++;
                     }
                 });
-                if (!updated) alert("출근 기록이 없습니다.");
-            });
-        });
 
-        function displayRecords(records) {
-            recordsDiv.innerHTML = '';
-            records.forEach(record => {
-                const div = document.createElement('div');
-                div.textContent = `${record.name || '이름 없음'} (${record.email}) | 출근: ${record.checkIn || '-'} | 퇴근: ${record.checkOut || '-'}`;
-                recordsDiv.appendChild(div);
+                if (checkInCountToday >= 1 && !confirm("이미 출근 기록이 있습니다. 재입력하시겠어요?")) {
+                    return;
+                }
+
+                attendanceRef.push({
+                    uid: auth.currentUser.uid,
+                    name: auth.currentUser.displayName,
+                    email: auth.currentUser.email,
+                    checkIn: now.toISOString(),
+                    checkOut: null
+                });
+                alert("출근 기록 저장 완료");
             });
         }
 
-        recordsRef.on('value', snapshot => {
-            const allRecords = [];
-            snapshot.forEach(child => {
-                allRecords.push(child.val());
-            });
-            // 초기 로드시 전체 기록 표시
-            displayRecords(allRecords);
-            // 이후 검색 버튼 클릭 시 필터링하여 표시
-        });
+        function recordCheckOut() {
+            const now = new Date();
+            const today = now.toISOString().split("T")[0];
 
-        showAllBtn.addEventListener('click', () => {
-            recordsRef.once('value', snapshot => {
-                const allRecords = [];
+            attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
+                let lastUnfinishedKey = null;
+                let hasCheckOutToday = false;
+
                 snapshot.forEach(child => {
-                    allRecords.push(child.val());
+                    const record = child.val();
+                    if (record.checkIn && record.checkIn.startsWith(today) && !record.checkOut) {
+                        lastUnfinishedKey = child.key;
+                    }
+                    if (record.checkOut && record.checkOut.startsWith(today)) {
+                        hasCheckOutToday = true;
+                    }
                 });
-                displayRecords(allRecords);
+
+                if (hasCheckOutToday && !confirm("이미 퇴근 기록이 있습니다. 수정하시겠어요?")) {
+                    return;
+                }
+
+                if (lastUnfinishedKey) {
+                    database.ref(`attendance/${lastUnfinishedKey}`).update({ checkOut: now.toISOString() });
+                    alert("퇴근 기록 저장 완료");
+                } else {
+                    attendanceRef.push({
+                        uid: auth.currentUser.uid,
+                        name: auth.currentUser.displayName,
+                        email: auth.currentUser.email,
+                        checkIn: null,
+                        checkOut: now.toISOString()
+                    });
+                    alert("퇴근 기록 저장 완료 (출근 기록 없음)");
+                }
             });
-        });
+        }
 
-        searchMonthBtn.addEventListener('click', () => {
-            const selectedMonth = searchMonthInput.value;
-            if (selectedMonth) {
-                recordsRef.once('value', snapshot => {
-                    const filteredRecords = [];
-                    snapshot.forEach(child => {
-                        const record = child.val();
-                        if (record.checkIn && record.checkIn.startsWith(selectedMonth)) {
-                            filteredRecords.push(record);
-                        }
-                    });
-                    displayRecords(filteredRecords);
-                });
-            } else {
-                alert("검색할 월을 선택해 주세요.");
+        function searchAttendance() {
+    const month = searchMonthInput.value; // YYYY-MM
+    const date = document.getElementById("searchMonthIdDate").value; // YYYY-MM-DD
+    const keyword = searchIdInput.value.trim().toLowerCase();
+
+    attendanceRef.once("value", snapshot => {
+        const filteredRecords = [];
+
+        snapshot.forEach(child => {
+            const record = child.val();
+
+            const alias = emailAliasMap[record.email]?.toLowerCase() || "";
+const idMatch = !keyword || keyword === "all" ||
+    (record.email?.toLowerCase().includes(keyword)) ||
+    (record.name?.toLowerCase().includes(keyword)) ||
+    alias.includes(keyword);
+
+
+            const checkInDate = record.checkIn ? record.checkIn.split("T")[0] : "";
+            const checkOutDate = record.checkOut ? record.checkOut.split("T")[0] : "";
+
+            const dateMatch = !date || checkInDate === date || checkOutDate === date;
+            const monthMatch = !month || checkInDate.startsWith(month) || checkOutDate.startsWith(month);
+
+            // ✅ 날짜 우선 → 날짜가 선택되면 날짜 기준으로, 아니면 월 기준
+            if (idMatch && (date ? dateMatch : monthMatch)) {
+                filteredRecords.push(record);
             }
         });
 
-        searchIdBtn.addEventListener('click', () => {
-            const searchedId = searchIdInput.value.trim();
-            if (searchedId) {
-                recordsRef.once('value', snapshot => {
-                    const filteredRecords = [];
-                    snapshot.forEach(child => {
-                        const record = child.val();
-                        if (record.email && record.email.toLowerCase().includes(searchedId.toLowerCase())) {
-                            filteredRecords.push(record);
-                        } else if (record.uid && record.uid.includes(searchedId)) { // UID로도 검색 가능하도록 추가
-                            filteredRecords.push(record);
-                        }
-                    });
-                    displayRecords(filteredRecords);
-                });
-            } else {
-                alert("검색할 아이디 (이메일 주소 또는 UID)를 입력해 주세요.");
-            }
-        });
+        displayRecords(filteredRecords);
+    });
+}
+
+
+        auth.onAuthStateChanged(user => {
+    currentUser = user;
+    if (user) {
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        userInfoDiv.textContent = `🙋 ${user.displayName} (${user.email})`;
+        enableButtonsByLocation();
+
+        const isAdmin = adminEmails.includes(user.email);
+        if (isAdmin) {
+            adminMenuDiv.style.display = "block";
+            recordsDiv.style.display = "block"; // 관리자는 기록 영역 보이기
+            fetchLast3DaysRecords(true); // 관리자는 모든 기록 조회
+        } else {
+            adminMenuDiv.style.display = "none";
+            recordsDiv.style.display = "none"; // 일반 사용자는 기록 영역 숨기기
+        }
+    } else {
+        userInfoDiv.textContent = "";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        adminMenuDiv.style.display = "none";
+        recordsDiv.style.display = "none";
+    }
+});
+
+        loginBtn.onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+        logoutBtn.onclick = () => auth.signOut().then(() => location.reload());
+        checkInBtn.onclick = recordCheckIn;
+        checkOutBtn.onclick = recordCheckOut;
+        searchMonthIdBtn.onclick = searchAttendance;
     </script>
 </body>
 </html>
