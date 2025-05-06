@@ -201,8 +201,9 @@ const formatDateNormal = iso => {
     const days = ['일', '월', '화', '수', '목', '금', '토'];
     const day = days[date.getDay()];
 
-    return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day}) <span class="time-highlight">${hour}:${minute}</span>`;
+    return `<span style="color: gray; font-weight: bold;">${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day})</span> <span class="time-highlight">${hour}:${minute}</span>`;
 };
+
 
 // 퇴근용 - 새벽 시간 24~32시 변환
 const formatDateLate = iso => {
@@ -221,9 +222,8 @@ const formatDateLate = iso => {
     const day = days[date.getDay()];
     hour = String(hour).padStart(2, '0');
 
-    return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day}) <span class="time-highlight">${hour}:${minute}</span>`;
+    return `<span style="color: gray; font-weight: bold;">${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day})</span> <span class="time-highlight">${hour}:${minute}</span>`;
 };
-
 
 
 
