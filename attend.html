@@ -330,38 +330,40 @@ function displayRecords(records) {
         }
 
         function searchAttendance() {
-    const month = searchMonthInput.value; // YYYY-MM
-    const date = document.getElementById("searchMonthIdDate").value; // YYYY-MM-DD
-    const keyword = searchIdInput.value.trim().toLowerCase();
+  const month = searchMonthInput.value; // YYYY-MM
+  const date = document.getElementById("searchMonthIdDate").value; // YYYY-MM-DD
+  const keyword = searchIdInput.value.trim().toLowerCase();
 
-    attendanceRef.once("value", snapshot => {
-        const filteredRecords = [];
+  attendanceRef.once("value", snapshot => {
+    const filteredRecords = [];
 
-        snapshot.forEach(child => {
-            const record = child.val();
+    snapshot.forEach(child => {
+      const record = child.val();
 
-            const alias = emailAliasMap[record.email]?.toLowerCase() || "";
-const idMatch = !keyword || keyword === "all" ||
-    (record.email?.toLowerCase().includes(keyword)) ||
-    (record.name?.toLowerCase().includes(keyword)) ||
-    alias.includes(keyword);
+      const alias = emailAliasMap[record.email]?.toLowerCase() || "";
+      const idMatch = !keyword || keyword === "all" ||
+        (record.email?.toLowerCase().includes(keyword)) ||
+        (record.name?.toLowerCase().includes(keyword)) ||
+        alias.includes(keyword);
 
+      // ✅ 날짜 비교를 위해 Date 객체 생성
+      const checkInDate = record.checkIn ? new Date(record.checkIn).toISOString().split("T")[0] : "";
+      const checkOutDate = record.checkOut ? new Date(record.checkOut).toISOString().split("T")[0] : "";
 
-            const checkInDate = record.checkIn ? record.checkIn.split("T")[0] : "";
-            const checkOutDate = record.checkOut ? record.checkOut.split("T")[0] : "";
+      const dateMatch = !date || checkInDate === date || checkOutDate === date;
+      const monthMatch = !month || checkInDate.startsWith(month) || checkOutDate.startsWith(month);
 
-            const dateMatch = !date || checkInDate === date || checkOutDate === date;
-            const monthMatch = !month || checkInDate.startsWith(month) || checkOutDate.startsWith(month);
-
-            // ✅ 날짜 우선 → 날짜가 선택되면 날짜 기준으로, 아니면 월 기준
-            if (idMatch && (date ? dateMatch : monthMatch)) {
-                filteredRecords.push(record);
-            }
-        });
-
-        displayRecords(filteredRecords);
+      if (idMatch && (date ? dateMatch : monthMatch)) {
+        filteredRecords.push(record);
+      }
     });
+
+    // ✅ 최신순 정렬 (선택)
+    filteredRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
+    displayRecords(filteredRecords);
+  });
 }
+
 
 
         auth.onAuthStateChanged(user => {
