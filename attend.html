@@ -67,6 +67,16 @@
         .adminInput {
         margin-right: 10px;
         }
+        .time-highlight {
+    color: navy;
+    font-weight: bold;
+}
+#records div {
+    margin-bottom: 6px;
+    line-height: 1.6;
+}
+
+        
     </style>
 </head>
 <body>
@@ -190,13 +200,18 @@
         return;
     }
     const isAdmin = currentUser && adminEmails.includes(currentUser.email);
+     
      const formatDate = iso => {
     if (!iso) return "-";
     const date = new Date(iso);
     const days = ['일', '월', '화', '수', '목', '금', '토'];
     const day = days[date.getDay()];
-    return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day}) ${date.getHours()}시 ${String(date.getMinutes()).padStart(2, '0')}분`;
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day}) <span class="time-highlight">${hour}:${minute}</span>`;
 };
+
+
 
     records.forEach(record => {
     if (isAdmin || (currentUser && record.uid === currentUser.uid)) {
