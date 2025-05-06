@@ -288,7 +288,7 @@ function displayRecords(records) {
 
         function recordCheckIn() {
   const now = new Date();
-  const today = now.toISOString().split("T")[0];
+  const todayDateStr = now.toISOString().split("T")[0];
 
   attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
     let lastCheckInKey = null;
@@ -297,8 +297,11 @@ function displayRecords(records) {
       const record = child.val();
       const key = child.key;
 
-      if (record.checkIn && record.checkIn.startsWith(today)) {
-        lastCheckInKey = key;
+      if (record.checkIn) {
+        const checkInDateStr = new Date(record.checkIn).toISOString().split("T")[0];
+        if (checkInDateStr === todayDateStr) {
+          lastCheckInKey = key;
+        }
       }
     });
 
@@ -323,6 +326,7 @@ function displayRecords(records) {
     }
   });
 }
+
 
 
         function recordCheckOut() {
