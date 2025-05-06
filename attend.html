@@ -427,34 +427,34 @@ function displayRecords(records) {
 
 
         auth.onAuthStateChanged(user => {
-            currentUser = user;
-            if (user) {
-                loginBtn.style.display = "none";
-                logoutBtn.style.display = "inline-block";
-                userInfoDiv.textContent = `🙋 ${user.displayName} (${user.email})`;
-                enableButtonsByLocation();
+    currentUser = user;
+    if (user) {
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        userInfoDiv.textContent = `🙋 ${user.displayName} (${user.email})`;
+        enableButtonsByLocation();
 
-                const isAdmin = adminEmails.includes(user.email);
-                if (isAdmin) {
-                    adminMenuDiv.style.display = "block";
-                    recordsDiv.style.display = "block"; // 관리자는 기록 영역 보이기
-                    fetchAllRecords(); // 관리자는 모든 기록 조회
-                } else {
-                    adminMenuDiv.style.display = "none";
-                    recordsDiv.style.display = "none"; // 일반 사용자는 기록 영역 숨기기
-                }
-            } else {
-                userInfoDiv.textContent = "";
-                loginBtn.style.display = "inline-block";
-                logoutBtn.style.display = "none";
-                adminMenuDiv.style.display = "none";
-                recordsDiv.style.display = "none";
-                // Clear any existing user data
-                currentUser = null;
-                checkInBtn.disabled = true;
-                checkOutBtn.disabled = true;
-            }
+        const isAdmin = adminEmails.includes(user.email);
+        if (isAdmin) {
+            adminMenuDiv.style.display = "block";
+            recordsDiv.style.display = "block"; // 관리자는 기록 영역 보이기
+            fetchAllRecords(); // 관리자는 모든 기록 조회
+        } else {
+            adminMenuDiv.style.display = "none";
+            recordsDiv.style.display = "none"; // 일반 사용자는 기록 영역 숨기기
+        }
+    } else {
+        userInfoDiv.textContent = "";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        adminMenuDiv.style.display = "none";
+        recordsDiv.style.display = "none";
+        currentUser = null;
+        checkInBtn.disabled = true;
+        checkOutBtn.disabled = true;
+    }
 });
+
 
         loginBtn.onclick = () => {
             auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(result => {
