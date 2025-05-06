@@ -253,41 +253,38 @@ function displayRecords(records) {
 
 
         function fetchLast3DaysRecords(isAdmin) {
-    const now = new Date();
-    const past = new Date(now);
-    past.setDate(now.getDate() - 2);
-    const startDateISO = past.toISOString().split("T")[0];
-    const endDateISO = now.toISOString().split("T")[0];
+  const now = new Date();
+  const past = new Date(now);
+  past.setDate(now.getDate() - 2);
+  const startDateISO = past.toISOString().split("T")[0];
+  const endDateISO = now.toISOString().split("T")[0];
 
-    attendanceRef.orderByChild('checkIn') // 인덱싱 활용
-        .startAt(startDateISO)
-        .endAt(endDateISO + '\uf8ff') // 유니코드 범위 끝까지 검색
-        .once("value", snapshot => {
-            const filteredRecords = [];
-            snapshot.forEach(child => {
-                const record = child.val();
-                if (isAdmin || record.uid === currentUser.uid) { // ✅ 관리자거나 자신의 UID와 일치하는 경우
-                    filteredRecords.push(record);
-                }
-            });
+  attendanceRef.once("value", snapshot => {
+    const filteredMap = new Map();
 
-            attendanceRef.orderByChild('checkOut') // 퇴근 기준도 고려
-                .startAt(startDateISO)
-                .endAt(endDateISO + '\uf8ff')
-                .once("value", snapshotOut => {
-                    snapshotOut.forEach(childOut => {
-                        const recordOut = childOut.val();
-                        const isAlreadyIncluded = filteredRecords.some(rec => rec.uid === recordOut.uid && rec.checkIn === recordOut.checkIn && rec.checkOut === recordOut.checkOut);
-                        if ((isAdmin || recordOut.uid === currentUser.uid) && !isAlreadyIncluded && (recordOut.checkIn || recordOut.checkOut)) { // ✅ 관리자거나 자신의 UID와 일치하는 경우
-                            filteredRecords.push(recordOut);
-                        }
-                    });
-                    // 시간 순으로 정렬 (선택 사항)
-                    filteredRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
-                    displayRecords(filteredRecords);
-                });
-        });
+    snapshot.forEach(child => {
+      const record = child.val();
+      const uid = record.uid;
+      const checkInDate = record.checkIn ? record.checkIn.split("T")[0] : "";
+      const checkOutDate = record.checkOut ? record.checkOut.split("T")[0] : "";
+
+      const matchIn = checkInDate >= startDateISO && checkInDate <= endDateISO;
+      const matchOut = checkOutDate >= startDateISO && checkOutDate <= endDateISO;
+
+      if (!uid || (!matchIn && !matchOut)) return;
+      if (!isAdmin && currentUser.uid !== uid) return;
+
+      const key = `${uid}_${checkInDate || checkOutDate}`;
+      // 항상 최신 기록으로 덮어쓰기
+      filteredMap.set(key, record);
+    });
+
+    const mergedRecords = Array.from(filteredMap.values());
+    mergedRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
+    displayRecords(mergedRecords);
+  });
 }
+
 
         function recordCheckIn() {
   const now = new Date();
