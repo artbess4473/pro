@@ -358,61 +358,52 @@ displayRecords(records);
 
 
         function recordCheckOut() {
-            const now = new Date();
-            const today = now.toISOString().split("T")[0];
+    const now = new Date();
+    const nowISO = now.toISOString();
+    const nowHour = now.getHours();
+    const todayStr = now.toISOString().split("T")[0];
 
-            attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
-                let lastUnfinishedKey = null;
-let lastUnfinishedTime = null;
-let lastCheckOutKey = null;
+    const targetDateStr = (nowHour < 8) ? new Date(now.setDate(now.getDate() - 1)).toISOString().split("T")[0] : todayStr;
 
-snapshot.forEach(child => {
-    const record = child.val();
-    const key = child.key;
+    attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
+        let targetKey = null;
 
-    if (record.checkIn && record.checkIn.startsWith(today) && !record.checkOut) {
-        const time = new Date(record.checkIn).getTime();
-        if (!lastUnfinishedTime || time > lastUnfinishedTime) {
-            lastUnfinishedTime = time;
-            lastUnfinishedKey = key;  // ✅ 가장 최근 출근 기록을 저장
-        }
-    }
+        snapshot.forEach(child => {
+            const record = child.val();
+            const key = child.key;
 
-    if (record.checkOut && record.checkOut.startsWith(today)) {
-        lastCheckOutKey = key;
-    }
-});
+            if (!record.uid) return;
 
+            const checkInDate = record.checkIn ? new Date(record.checkIn).toISOString().split("T")[0] : "";
+            const checkOutDate = record.checkOut ? new Date(record.checkOut).toISOString().split("T")[0] : "";
 
-                if (lastUnfinishedKey) {
-                    // 출근했지만 퇴근 안 된 기록이 있으면 여기에 퇴근시간 추가
-                    database.ref(`attendance/${lastUnfinishedKey}`).update({ checkOut: now.toISOString() }).then(() => {
-                        alert("퇴근 기록 저장 완료");
-                        fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
-                    });
-                } else if (lastCheckOutKey) {
-                    // 기존 퇴근 기록 덮어쓰기
-                    if (confirm("이미 퇴근 기록이 있습니다. 수정하시겠어요?")) {
-                        database.ref(`attendance/${lastCheckOutKey}`).update({ checkOut: now.toISOString() }).then(() => {
-                            alert("퇴근 시간 수정 완료");
-                            fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
-                        });
-                    }
-                } else {
-                    // 출근 기록 없이 퇴근만 새로 생성
-                    attendanceRef.push({
-                        uid: auth.currentUser.uid,
-                        name: auth.currentUser.displayName,
-                        email: auth.currentUser.email,
-                        checkIn: null,
-                        checkOut: now.toISOString()
-                    }).then(() => {
-                        alert("퇴근 기록 저장 완료 (출근 기록 없음)");
-                        fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
-                    });
-                }
+            // 출근 기록이 있고, 퇴근 기록은 없으며, 해당 날짜인 경우
+            if (checkInDate === targetDateStr && !record.checkOut) {
+                targetKey = key;
+            }
+        });
+
+        if (targetKey) {
+            database.ref(`attendance/${targetKey}`).update({ checkOut: nowISO }).then(() => {
+                alert("퇴근 기록 저장 완료");
+                fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
             });
+        } else {
+            // 출근 기록 없이 퇴근만 새로 생성
+            attendanceRef.push({
+                uid: auth.currentUser.uid,
+                name: auth.currentUser.displayName,
+                email: auth.currentUser.email,
+                checkIn: null,
+                checkOut: nowISO
+            }).then(() => {
+                alert("퇴근 기록 저장 완료 (출근 기록 없음)");
+                fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+            });
+        }
+    });
 }
+
 
 
 
