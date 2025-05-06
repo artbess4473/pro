@@ -456,12 +456,13 @@ function displayRecords(records) {
 
         const isAdmin = adminEmails.includes(user.email);
         if (isAdmin) {
-            adminMenuDiv.style.display = "block";
-            recordsDiv.style.display = "block"; // 관리자는 기록 영역 보이기
-            fetchAllRecords(); // 관리자는 모든 기록 조회
+            adminMenuDiv.style.display = "block";       // 관리자 메뉴 보이기
+            recordsDiv.style.display = "block";         // 기록 영역 보이기
+            fetchLast3DaysRecords(true);                // ✅ 관리자: 3일치 전체 기록
         } else {
-            adminMenuDiv.style.display = "none";
-            recordsDiv.style.display = "none"; // 일반 사용자는 기록 영역 숨기기
+            adminMenuDiv.style.display = "none";        // 일반 사용자: 메뉴 숨기기
+            recordsDiv.style.display = "block";         // 기록 영역 보이기
+            fetchLast3DaysRecords(false);               // ✅ 일반인: 3일치 내 기록만
         }
     } else {
         userInfoDiv.textContent = "";
@@ -474,6 +475,7 @@ function displayRecords(records) {
         checkOutBtn.disabled = true;
     }
 });
+
 
 
         loginBtn.onclick = () => {
