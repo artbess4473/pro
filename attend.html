@@ -197,17 +197,15 @@ const formatDate = iso => {
   if (!iso) return "-";
   const date = new Date(iso);
 
-  // 기준일은 날짜만 취하고 시간은 그대로 둔다
   const baseDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
+  const hoursSinceMidnight = (date - baseDate) / (1000 * 60 * 60); // 시간 차이
   let hour = date.getHours();
   const minute = String(date.getMinutes()).padStart(2, '0');
   const days = ['일', '월', '화', '수', '목', '금', '토'];
   const day = days[date.getDay()];
 
-  // 만약 시간이 0시~4시 사이라면 → 전날에서 넘어온 야간 퇴근으로 보고 24+식으로 표현
-  const hoursSinceBase = (date - baseDate) / (1000 * 60 * 60); // 시간 차이
-
-  if (hoursSinceBase < 5) {
+  // 0시 이후 ~ 08시 이전 → 24시~32시로 변환
+  if (hoursSinceMidnight >= 0 && hoursSinceMidnight < 8) {
     hour += 24;
   }
 
@@ -215,6 +213,7 @@ const formatDate = iso => {
 
   return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()} (${day}) <span class="time-highlight">${hour}:${minute}</span>`;
 };
+
 
 
 // ✅ displayRecords는 한 번만 정의
