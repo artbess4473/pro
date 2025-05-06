@@ -305,6 +305,8 @@ function displayRecords(records) {
   const now = new Date();
   const todayDateStr = now.toISOString().split("T")[0];
 
+  console.log("출근 버튼 클릭됨:", now.toISOString());
+
   attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
     let lastCheckInKey = null;
 
@@ -321,6 +323,7 @@ function displayRecords(records) {
     });
 
     if (lastCheckInKey) {
+      console.log("기존 출근 기록 수정:", lastCheckInKey);
       if (confirm("이미 출근 기록이 있습니다. 수정하시겠어요?")) {
         database.ref(`attendance/${lastCheckInKey}`).update({ checkIn: now.toISOString() }).then(() => {
           alert("출근 시간 수정 완료");
@@ -328,6 +331,7 @@ function displayRecords(records) {
         });
       }
     } else {
+      console.log("새 출근 기록 저장 시작");
       attendanceRef.push({
         uid: auth.currentUser.uid,
         name: auth.currentUser.displayName,
@@ -341,6 +345,7 @@ function displayRecords(records) {
     }
   });
 }
+
 
 
 
