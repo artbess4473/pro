@@ -199,10 +199,16 @@
 };
 
     records.forEach(record => {
-        if (isAdmin || (currentUser && record.uid === currentUser.uid)) {
-            const div = document.createElement("div");
-            const alias = emailAliasMap[record.email] || "익명";
-div.textContent = `${alias} | 출근: ${formatDate(record.checkIn)} | 퇴근: ${formatDate(record.checkOut)}`;
+    if (isAdmin || (currentUser && record.uid === currentUser.uid)) {
+        const div = document.createElement("div");
+        const alias = emailAliasMap[record.email] || "익명";
+
+        // ✅ ✅ 반드시 둘 다 formatDate 사용!
+        div.textContent = `${alias} | 출근: ${formatDate(record.checkIn)} | 퇴근: ${formatDate(record.checkOut)}`;
+
+        recordsDiv.appendChild(div);
+    }
+});
 
 
 
