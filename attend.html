@@ -67,15 +67,15 @@
         .adminInput {
         margin-right: 10px;
         }
-            .time-highlight {
-        color: navy;
-        font-weight: bold;
-    }
+        .time-highlight {
+            color: navy;
+            font-weight: bold;
+        }
 
-    #records div {
+        #records div {
         margin-bottom: 6px;
         line-height: 1.6;
-    }
+        }
 
     </style>
 </head>
@@ -103,14 +103,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyD0jEjDD_W1lj8C9hEMEQahzMroohEAn8w",
-            authDomain: "artattend.firebaseapp.com",
-            databaseURL: "https://artattend-default-rtdb.firebaseio.com/",
-            projectId: "artattend",
-            storageBucket: "artattend.appspot.com",
-            messagingSenderId: "716771305600",
-            appId: "1:716771305600:web:16e352922e62592ed51e65",
-            measurementId: "G-VMJY29DZ5B"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -120,22 +120,22 @@
 
         // ✅ 1. 이메일 치환 이름 매핑
         const emailAliasMap = {
- "yeseul9405@gmail.com": "랄라+강예슬",
- "artbess4473@gmail.com": "랄라+곽진우",
- "dlsvlslxm410@gmail.com": "랄라+김벼리",
- "sppol93@gmail.com": "랄라+서보령",
- "ya55218435@gmail.com": "랄라+이은정",
- "bomsun28@gmail.com": "랄라+조현지",
- "9seungbone@gmail.com": "밝은+구승은",
- "gim260641@gmila.com": "밝은+김미화",
- "apple68691@gmail.com": "밝은+김성빈",
- "good2bad1@gmail.com": "밝은+김영란",
- "nhr1105@gmail.com": "밝은+남효리",
- "tjdals.3572.99@gmail.com": "밝은+박성민",
- "wlgml1176@gmail.com": "밝은+이지희",
- "duwn77200@gmail.com": "밝은+조연주",
- "herbo75@gmali.com": "밝은+허보은",
- "iwg1hsh@gmail.com": "밝은+허신혜"
+"yeseul9405@gmail.com": "랄라+강예슬",
+"artbess4473@gmail.com": "랄라+곽진우",
+"dlsvlslxm410@gmail.com": "랄라+김벼리",
+"sppol93@gmail.com": "랄라+서보령",
+"ya55218435@gmail.com": "랄라+이은정",
+"bomsun28@gmail.com": "랄라+조현지",
+"9seungbone@gmail.com": "밝은+구승은",
+"gim260641@gmila.com": "밝은+김미화",
+"apple68691@gmail.com": "밝은+김성빈",
+"good2bad1@gmail.com": "밝은+김영란",
+"nhr1105@gmail.com": "밝은+남효리",
+"tjdals.3572.99@gmail.com": "밝은+박성민",
+"wlgml1176@gmail.com": "밝은+이지희",
+"duwn77200@gmail.com": "밝은+조연주",
+"herbo75@gmali.com": "밝은+허보은",
+"iwg1hsh@gmail.com": "밝은+허신혜"
 };
 
 
@@ -162,8 +162,8 @@
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLng = (lng2 - lng1) * Math.PI / 180;
             const a = Math.sin(dLat / 2) ** 2 +
-                        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                        Math.sin(dLng / 2) ** 2;
+                            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                            Math.sin(dLng / 2) ** 2;
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
 
@@ -238,20 +238,8 @@ function displayRecords(records) {
 
     const isAdmin = currentUser && adminEmails.includes(currentUser.email);
 
-    // ✅ UID+날짜 기준으로 중복 제거 (가장 마지막 기록만 남김)
-    const uniqueMap = new Map();
+
     records.forEach(record => {
-        const dateKey = (record.checkIn || record.checkOut || "").split("T")[0];
-        const uidKey = record.uid || "";
-        if (!dateKey || !uidKey) return;
-        uniqueMap.set(`<span class="math-inline">\{uidKey\}\_</span>{dateKey}`, record);
-    });
-
-    const uniqueRecords = Array.from(uniqueMap.values());
-
-    uniqueRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
-
-    uniqueRecords.forEach(record => {
         if (isAdmin || (currentUser && record.uid === currentUser.uid)) {
             const div = document.createElement("div");
             const alias = emailAliasMap[record.email] || "익명";
@@ -264,208 +252,201 @@ function displayRecords(records) {
 
 
         function fetchLast3DaysRecords(isAdmin) {
-    const now = new Date();
-    const past = new Date(now);
-    past.setDate(now.getDate() - 2);
-    const startDateISO = past.toISOString().split("T")[0];
-    const endDateISO = now.toISOString().split("T")[0];
+            const now = new Date();
+            const past = new Date(now);
+            past.setDate(now.getDate() - 2);
+            const startDateISO = past.toISOString().split("T")[0];
+            const endDateISO = now.toISOString().split("T")[0];
 
-    attendanceRef.once("value", snapshot => {
-        const filteredMap = new Map();
+            attendanceRef.once("value", snapshot => {
+                const records = [];
+                snapshot.forEach(child => {
+                    const record = child.val();
+                    const uid = record.uid;
+                    const checkInDate = record.checkIn ? record.checkIn.split("T")[0] : "";
+                    const checkOutDate = record.checkOut ? record.checkOut.split("T")[0] : "";
 
-        snapshot.forEach(child => {
-            const record = child.val();
-            const uid = record.uid;
-            const checkInDate = record.checkIn ? record.checkIn.split("T")[0] : "";
-            const checkOutDate = record.checkOut ? record.checkOut.split("T")[0] : "";
+                    const matchIn = checkInDate >= startDateISO && checkInDate <= endDateISO;
+                    const matchOut = checkOutDate >= startDateISO && checkOutDate <= endDateISO;
 
-            const matchIn = checkInDate >= startDateISO && checkInDate <= endDateISO;
-            const matchOut = checkOutDate >= startDateISO && checkOutDate <= endDateISO;
+                    if (!uid) return;
+                    if (!isAdmin && currentUser.uid !== uid) return;
 
-            if (!uid || (!matchIn && !matchOut)) return;
-            if (!isAdmin && currentUser.uid !== uid) return;
-
-            const dateKey = checkInDate || checkOutDate || now.toISOString().split("T")[0];
-            const key = `<span class="math-inline">\{uid\}\_</span>{dateKey}`;
-            filteredMap.set(key, record);
-        });
-
-        // ✅ 이 부분 꼭 snapshot.forEach 바깥에 있어야 함!
-        const mergedRecords = Array.from(filteredMap.values());
-        mergedRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
-        displayRecords(mergedRecords);
-    });
-}
+                    records.push(record);
+                });
+                displayRecords(records);
+            });
+        }
 
 
 
 
 
         function recordCheckIn() {
-    const now = new Date();
-    const todayDateStr = now.toISOString().split("T")[0];
+            const now = new Date();
+            const todayDateStr = now.toISOString().split("T")[0];
 
-    console.log("출근 버튼 클릭됨:", now.toISOString());
+            console.log("출근 버튼 클릭됨:", now.toISOString());
 
-    attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
-        let lastCheckInKey = null;
+            attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
+                let lastCheckInKey = null;
 
-        snapshot.forEach(child => {
-            const record = child.val();
-            const key = child.key;
+                snapshot.forEach(child => {
+                    const record = child.val();
+                    const key = child.key;
 
-            if (record.checkIn) {
-        const parsedDate = new Date(record.checkIn);
-        if (!isNaN(parsedDate)) {
-            const checkInDateStr = parsedDate.toISOString().split("T")[0];
-            if (checkInDateStr === todayDateStr) {
-                lastCheckInKey = key;
+                    if (record.checkIn) {
+                const parsedDate = new Date(record.checkIn);
+                if (!isNaN(parsedDate)) {
+                    const checkInDateStr = parsedDate.toISOString().split("T")[0];
+                    if (checkInDateStr === todayDateStr) {
+                        lastCheckInKey = key;
+                    }
+                }
             }
-        }
-    }
 
-        });
-
-        if (lastCheckInKey) {
-            console.log("기존 출근 기록 수정:", lastCheckInKey);
-            if (confirm("이미 출근 기록이 있습니다. 수정하시겠어요?")) {
-                database.ref(`attendance/${lastCheckInKey}`).update({ checkIn: now.toISOString() }).then(() => {
-                    alert("출근 시간 수정 완료");
-                    fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
                 });
-            }
-        } else {
-            console.log("새 출근 기록 저장 시작");
-            attendanceRef.push({
-                uid: auth.currentUser.uid,
-                name: auth.currentUser.displayName,
-                email: auth.currentUser.email,
-                checkIn: now.toISOString(),
-                checkOut: null
-            }).then(() => {
-                alert("출근 기록 저장 완료");
-                fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+
+                if (lastCheckInKey) {
+                    console.log("기존 출근 기록 수정:", lastCheckInKey);
+                    if (confirm("이미 출근 기록이 있습니다. 수정하시겠어요?")) {
+                        database.ref(`attendance/${lastCheckInKey}`).update({ checkIn: now.toISOString() }).then(() => {
+                            alert("출근 시간 수정 완료");
+                            fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+                        });
+                    }
+                } else {
+                    console.log("새 출근 기록 저장 시작");
+                    attendanceRef.push({
+                        uid: auth.currentUser.uid,
+                        name: auth.currentUser.displayName,
+                        email: auth.currentUser.email,
+                        checkIn: now.toISOString(),
+                        checkOut: null
+                    }).then(() => {
+                        alert("출근 기록 저장 완료");
+                        fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+                    });
+                }
             });
-        }
-    });
 }
 
 
 
 
         function recordCheckOut() {
-    const now = new Date();
-    const today = now.toISOString().split("T")[0];
+            const now = new Date();
+            const today = now.toISOString().split("T")[0];
 
-    attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
-        let lastUnfinishedKey = null;
-        let lastCheckOutKey = null;
+            attendanceRef.orderByChild("uid").equalTo(auth.currentUser.uid).once("value", snapshot => {
+                let lastUnfinishedKey = null;
+                let lastCheckOutKey = null;
 
-        snapshot.forEach(child => {
-            const record = child.val();
-            const key = child.key;
+                snapshot.forEach(child => {
+                    const record = child.val();
+                    const key = child.key;
 
-            if (record.checkIn && record.checkIn.startsWith(today) && !record.checkOut) {
-                lastUnfinishedKey = key;
-            }
-            if (record.checkOut && record.checkOut.startsWith(today)) {
-                lastCheckOutKey = key;
-            }
-        });
-
-        if (lastUnfinishedKey) {
-            // 출근했지만 퇴근 안 된 기록이 있으면 여기에 퇴근시간 추가
-            database.ref(`attendance/${lastUnfinishedKey}`).update({ checkOut: now.toISOString() }).then(() => {
-                alert("퇴근 기록 저장 완료");
-                fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
-            });
-        } else if (lastCheckOutKey) {
-            // 기존 퇴근 기록 덮어쓰기
-            if (confirm("이미 퇴근 기록이 있습니다. 수정하시겠어요?")) {
-                database.ref(`attendance/${lastCheckOutKey}`).update({ checkOut: now.toISOString() }).then(() => {
-                    alert("퇴근 시간 수정 완료");
-                    fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+                    if (record.checkIn && record.checkIn.startsWith(today) && !record.checkOut) {
+                        lastUnfinishedKey = key;
+                    }
+                    if (record.checkOut && record.checkOut.startsWith(today)) {
+                        lastCheckOutKey = key;
+                    }
                 });
-            }
-        } else {
-            // 출근 기록 없이 퇴근만 새로 생성
-            attendanceRef.push({
-                uid: auth.currentUser.uid,
-                name: auth.currentUser.displayName,
-                email: auth.currentUser.email,
-                checkIn: null,
-                checkOut: now.toISOString()
-            }).then(() => {
-                alert("퇴근 기록 저장 완료 (출근 기록 없음)");
-                fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+
+                if (lastUnfinishedKey) {
+                    // 출근했지만 퇴근 안 된 기록이 있으면 여기에 퇴근시간 추가
+                    database.ref(`attendance/${lastUnfinishedKey}`).update({ checkOut: now.toISOString() }).then(() => {
+                        alert("퇴근 기록 저장 완료");
+                        fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+                    });
+                } else if (lastCheckOutKey) {
+                    // 기존 퇴근 기록 덮어쓰기
+                    if (confirm("이미 퇴근 기록이 있습니다. 수정하시겠어요?")) {
+                        database.ref(`attendance/${lastCheckOutKey}`).update({ checkOut: now.toISOString() }).then(() => {
+                            alert("퇴근 시간 수정 완료");
+                            fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+                        });
+                    }
+                } else {
+                    // 출근 기록 없이 퇴근만 새로 생성
+                    attendanceRef.push({
+                        uid: auth.currentUser.uid,
+                        name: auth.currentUser.displayName,
+                        email: auth.currentUser.email,
+                        checkIn: null,
+                        checkOut: now.toISOString()
+                    }).then(() => {
+                        alert("퇴근 기록 저장 완료 (출근 기록 없음)");
+                        fetchLast3DaysRecords(adminEmails.includes(auth.currentUser.email));
+                    });
+                }
             });
-        }
-    });
 }
 
 
 
         function searchAttendance() {
-    const month = searchMonthInput.value; //YYYY-MM
-    const date = document.getElementById("searchMonthIdDate").value; //YYYY-MM-DD
-    const keyword = searchIdInput.value.trim().toLowerCase();
+            const month = searchMonthInput.value; //YYYY-MM
+            const date = document.getElementById("searchMonthIdDate").value; //YYYY-MM-DD
+            const keyword = searchIdInput.value.trim().toLowerCase();
 
-    attendanceRef.once("value", snapshot => {
-        const filteredRecords = [];
+            attendanceRef.once("value", snapshot => {
+                const filteredRecords = [];
 
-        snapshot.forEach(child => {
-            const record = child.val();
+                snapshot.forEach(child => {
+                    const record = child.val();
 
-            const alias = emailAliasMap[record.email]?.toLowerCase() || "";
-            const idMatch = !keyword || keyword === "all" ||
-                (record.email?.toLowerCase().includes(keyword)) ||
-                (record.name?.toLowerCase().includes(keyword)) ||
-                alias.includes(keyword);
+                    const alias = emailAliasMap[record.email]?.toLowerCase() || "";
+                    const idMatch = !keyword || keyword === "all" ||
+                        (record.email?.toLowerCase().includes(keyword)) ||
+                        (record.name?.toLowerCase().includes(keyword)) ||
+                        alias.includes(keyword);
 
-            // ✅ 날짜 비교를 위해 Date 객체 생성
-            const checkInDate = record.checkIn ? new Date(record.checkIn).toISOString().split("T")[0] : "";
-            const checkOutDate = record.checkOut ? new Date(record.checkOut).toISOString().split("T")[0] : "";
+                    // ✅ 날짜 비교를 위해 Date 객체 생성
+                    const checkInDate = record.checkIn ? new Date(record.checkIn).toISOString().split("T")[0] : "";
+                    const checkOutDate = record.checkOut ? new Date(record.checkOut).toISOString().split("T")[0] : "";
 
-            const dateMatch = !date || checkInDate === date || checkOutDate === date;
-            const monthMatch = !month || checkInDate.startsWith(month) || checkOutDate.startsWith(month);
+                    const dateMatch = !date || checkInDate === date || checkOutDate === date;
+                    const monthMatch = !month || checkInDate.startsWith(month) || checkOutDate.startsWith(month);
 
-            if (idMatch && (date ? dateMatch : monthMatch)) {
-                filteredRecords.push(record);
-            }
-        });
+                    if (idMatch && (date ? dateMatch : monthMatch)) {
+                        filteredRecords.push(record);
+                    }
+                });
 
-        // ✅ 최신순 정렬 (선택)
-        filteredRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
-        displayRecords(filteredRecords);
-    });
+                // ✅ 최신순 정렬 (선택)
+                filteredRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
+                displayRecords(filteredRecords);
+            });
 }
 
 
 
         auth.onAuthStateChanged(user => {
-    currentUser = user;
-    if (user) {
-        loginBtn.style.display = "none";
-        logoutBtn.style.display = "inline-block";
-        userInfoDiv.textContent = `🙋 ${user.displayName} (${user.email})`;
-        enableButtonsByLocation();
+            currentUser = user;
+            if (user) {
+                loginBtn.style.display = "none";
+                logoutBtn.style.display = "inline-block";
+                userInfoDiv.textContent = `🙋 ${user.displayName} (${user.email})`;
+                enableButtonsByLocation();
 
-        const isAdmin = adminEmails.includes(user.email);
-        if (isAdmin) {
-            adminMenuDiv.style.display = "block";
-            recordsDiv.style.display = "block"; // 관리자는 기록 영역 보이기
-            fetchLast3DaysRecords(true); // 관리자는 모든 기록 조회
-        } else {
-            adminMenuDiv.style.display = "none";
-            recordsDiv.style.display = "none"; // 일반 사용자는 기록 영역 숨기기
-        }
-    } else {
-        userInfoDiv.textContent = "";
-        loginBtn.style.display = "inline-block";
-        logoutBtn.style.display = "none";
-        adminMenuDiv.style.display = "none";
-        recordsDiv.style.display = "none";
-    }
+                const isAdmin = adminEmails.includes(user.email);
+                if (isAdmin) {
+                    adminMenuDiv.style.display = "block";
+                    recordsDiv.style.display = "block"; // 관리자는 기록 영역 보이기
+                    fetchAllRecords(); // 관리자는 모든 기록 조회
+                } else {
+                    adminMenuDiv.style.display = "none";
+                    recordsDiv.style.display = "none"; // 일반 사용자는 기록 영역 숨기기
+                }
+            } else {
+                userInfoDiv.textContent = "";
+                loginBtn.style.display = "inline-block";
+                logoutBtn.style.display = "none";
+                adminMenuDiv.style.display = "none";
+                recordsDiv.style.display = "none";
+            }
 });
 
         loginBtn.onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
@@ -473,11 +454,17 @@ function displayRecords(records) {
         checkInBtn.onclick = recordCheckIn;
         checkOutBtn.onclick = recordCheckOut;
         searchMonthIdBtn.onclick = searchAttendance;
+
+
+function fetchAllRecords() {
+    attendanceRef.once("value", snapshot => {
+        const records = [];
+        snapshot.forEach(child => {
+            records.push(child.val());
+        });
+        displayRecords(records);
+    });
+}
     </script>
 </body>
 </html>
-
-
-
-
-            
