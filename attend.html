@@ -285,16 +285,20 @@ function displayRecords(records) {
       if (!uid || (!matchIn && !matchOut)) return;
       if (!isAdmin && currentUser.uid !== uid) return;
 
-      const key = `${uid}_${checkInDate || checkOutDate}`;
-      // 항상 최신 기록으로 덮어쓰기
+      const dateKey = checkInDate || checkOutDate || now.toISOString().split("T")[0];
+      const key = `${uid}_${dateKey}`;
       filteredMap.set(key, record);
     });
 
+    // ✅ 이 부분 꼭 snapshot.forEach 바깥에 있어야 함!
     const mergedRecords = Array.from(filteredMap.values());
     mergedRecords.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
     displayRecords(mergedRecords);
   });
 }
+
+
+
 
 
         function recordCheckIn() {
