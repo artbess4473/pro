@@ -114,7 +114,7 @@
 <body>
     <body translate="no">
     <div class="container">
-        <h2>밝은세상 (가)견적 <span style="font-size: 0.35em;">ver.250520</span></h2>
+        <h2>밝은세상 (가)견적 <span style="font-size: 0.35em;">ver.250706</span></h2>
         <div class="warning">
             최종견적은 총무팀장과 상의 후 확정.
         </div>
@@ -379,7 +379,7 @@ const govBannerPrices = {
 
 
     // ✅ 피켓 가격 (정액)
-        const pickPrices = { pick1: [3300, 8800], pick2: [5500, 11000], pick3: [8800, 15000] , pick4: [9000, 16500] , pick5: [11000, 25000] , pick6: [22000, 35000] , pick7: [30000, 33000] , pick8: [40000, 44000] , pick9: [60000, 66000] };
+        const pickPrices = { pick1: [3300, 8800], pick2: [5500, 11000], pick3: [8800, 15000] , pick4: [9000, 16500] , pick5: [11000, 25000] , pick6: [22000, 35000] , pick7: [30000, 33000] , pick8: [40000, 44000] , pick9: [6000, 66000] };
 
     // ✅ 배너 가격 (정액)
     const bannerItemPrices = { fabric: [30000, 33000], pet: [55000, 60000], indoor: [25000, 27000], outdoor: [30000, 35000],  eco: [40000, 44000] };
@@ -626,7 +626,7 @@ else if (type === 'banner') {
       } else if (lengthCm <= 200) {
         unitPrice = basePrice * 0.67;
       } else if (lengthCm <= 300) {
-        unitPrice = basePrice * 0.9;
+        unitPrice = basePrice * 0.95;
       } else if (lengthCm <= 400) {
         unitPrice = basePrice * 0.9;
       } else if (lengthCm <= 500) {
@@ -795,11 +795,10 @@ else if (type === 'banner') {
 
         // --- 관공서 외 계산
 
-
-
-
 const govInfo = govBannerPrices[width] || govBannerPrices.default;
 let unitPrice2 = 0;
+
+
 
 if (Array.isArray(govInfo)) {
     let matched = false;
